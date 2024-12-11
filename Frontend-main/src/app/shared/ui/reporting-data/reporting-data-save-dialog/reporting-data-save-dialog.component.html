@@ -1,0 +1,70 @@
+save-dialog works!
+<!-- <p-dialog appendTo="body"
+    [header]="(dataService$().reportTitle$() ? dataService$().reportTitle$() + ' - ' : '') + dataService$().saveDialog.action"
+    [modal]="true" [(visible)]="dataService$().saveDialog.visible" [style]="{ minWidth: '25rem' }">
+    <span class="p-text-secondary block mb-2">Please fill the form data.</span>
+    @if(dataService$().saveDialog.form){
+    <form [formGroup]="dataService$().saveDialog.form">
+        <div class="flex flex-column">
+            @for (field of dataService$().saveFields$(); track field.name; let i = $index) {
+            @if(dataService$().saveDialog.form.contains(field.name)){
+            @switch (field.type) {
+            @case ('text') {
+            <p-floatLabel class="mt-4 mb-1">
+                <input [id]="i + '.' + field.name" [formControlName]="field.name" [placeholder]="field.name" pInputText
+                    class="w-full" [required]="field.required">
+                <label [for]="i  + '.' + field.name" class="font-medium"
+                    [ngClass]="{'label-required': field.required}">{{field.name}}</label>
+            </p-floatLabel>
+            }
+            @case ('number') {
+            <p-floatLabel class="mt-4 mb-1">
+                <p-inputNumber [inputId]="i + '.' + field.name" [formControlName]="field.name"
+                    [placeholder]="field.name" class="w-full" styleClass="w-full" [required]="field.required" />
+                <label [for]="i  + '.' + field.name" class="font-medium"
+                    [ngClass]="{'label-required': field.required}">{{field.name}}</label>
+            </p-floatLabel>
+            }
+            @case ('date') {
+            <p-floatLabel class="mt-4 mb-1">
+                <p-calendar [id]="i + '.' + field.name" [formControlName]="field.name" styleClass="w-full"
+                    appendTo="body" [required]="field.required" />
+                <label [for]="i  + '.' + field.name" class="font-medium"
+                    [ngClass]="{'label-required': field.required}">{{field.name}}</label>
+            </p-floatLabel>
+            }
+            @case ('time') {
+            <p-floatLabel class="mt-4 mb-1">
+                <p-calendar [id]="i + '.' + field.name" [formControlName]="field.name" styleClass="w-full"
+                    appendTo="body" [required]="field.required" [timeOnly]="true" [showSeconds]="true" />
+                <label [for]="i  + '.' + field.name" class="font-medium"
+                    [ngClass]="{'label-required': field.required}">{{field.name}}</label>
+            </p-floatLabel>
+            }
+            @case ('datetime') {
+            <p-floatLabel class="mt-4 mb-1">
+                <p-calendar [id]="i + '.' + field.name" [formControlName]="field.name" styleClass="w-full"
+                    appendTo="body" [required]="field.required" [showTime]="true" [showSeconds]="true" />
+                <label [for]="i  + '.' + field.name" class="font-medium"
+                    [ngClass]="{'label-required': field.required}">{{field.name}}</label>
+            </p-floatLabel>
+            }
+            @default {
+            <p-floatLabel class="mt-4 mb-1">
+                <input [id]="i + '.' + field.name" [formControlName]="field.name" [placeholder]="field.name" pInputText
+                    class="w-full ng-invalid ng-dirty" [required]="field.required" [readonly]="true">
+                <label [for]="i  + '.' + field.name" class="font-medium"
+                    [ngClass]="{'label-required': field.required}">{{field.name}} [invalid input]</label>
+            </p-floatLabel>
+            }
+            }
+            }
+            }
+        </div>
+        <div class="flex justify-content-end gap-2 mt-5">
+            <button type="button" pButton pRipple [label]="dataService$().saveDialog.action"
+                [disabled]="dataService$().saveDialog.form.invalid" (click)="dataService$().onAction()"></button>
+        </div>
+    </form>
+    }
+</p-dialog> -->

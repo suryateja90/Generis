@@ -1,0 +1,41 @@
+<p-table [value]="rows$()" class="p-datatable-sm w-full" [style]="{ 'width': '100%', 'height': '100%' }"
+  [scrollable]="true" scrollHeight="flex" [expandedRowKeys]="expandedRows" dataKey="application">
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 3rem"></th>
+      <th style="width: 12rem">Application</th>
+      <th style="width: 12rem">Parameter</th>
+      <th>Value</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-row let-expanded="expanded">
+    <tr>
+      <td>
+        <button type="button" pButton pRipple [pRowToggler]="row" size="small"
+          class="h-2rem w-2rem -my-1 p-button-text p-button-rounded p-button-plain"
+          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+      </td>
+      <td colspan="3">{{ row.application }}</td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="rowexpansion" let-row>
+    @let parameters = getParameters(row.application);
+    @let parameterKeys = getKeys(parameters);
+    @for (key of parameterKeys; track key) {
+    <tr class="expanded-row vertical-align-top">
+      <td>
+        <button type="button" pButton pRipple size="small"
+          class="h-2rem w-2rem -my-1 p-button-text p-button-rounded p-button-plain p-button-danger" icon="pi pi-trash"
+          (click)="removeParameter(row.application, key)"></button>
+      </td>
+      <td></td>
+      <td>{{ key }}</td>
+      <td>{{ parameters[key] }}</td>
+    </tr>
+    }
+  </ng-template>
+
+</p-table>

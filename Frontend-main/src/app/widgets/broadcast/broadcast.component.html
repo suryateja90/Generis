@@ -1,0 +1,19 @@
+<h4>Broadcast Widget</h4>
+@if (connected$()) {
+<p>Here the broadcast messages:</p>
+<ul>
+    <!-- @for will process the array of signals more efficiently because each signal update is isolated, avoiding unnecessary re-evaluation of the entire list. -->
+    @for( messageSignal of broadcastMessagesArray$(); track messageSignal ) {
+        @let message = messageSignal();
+        @for( payload of message.payload; track $index ) {
+        <li>{{ message.type }} | {{ message.timestamp | date: 'medium' }} | {{ payload }} | | {{ message | json }}</li>
+        } @empty {
+        <div>No payloads available</div>
+        }
+    }
+    @empty {
+    <div>No items available</div>
+    }
+
+</ul>
+}

@@ -1,0 +1,12 @@
+<div class="flex w-full flex-column-reverse overflow-y-auto">
+    <div class="flex flex-column flex-auto">
+        @for (item of messages$(); track $index) {
+        <p class="mb-1">
+            <span [class]="'p-'+item.severity">
+                [ {{item.data.date | date:'medium'}} : {{item.summary}} ]
+            </span>
+            {{item.detail}}
+        </p>
+        }
+    </div>
+</div>

@@ -1,0 +1,115 @@
+@if(data$(); as data) {
+@if (data.loading) {
+<div class="flex w-full align-items-center justify-content-center min-h-5rem">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+</div>
+}
+@else if(data.error) {
+<div class="flex w-full align-items-center justify-content-center min-h-5rem">
+    Error: {{data.error}}
+</div>
+}
+@else {
+<div class="flex flex-column flex-auto">
+    <div class="flex h-full w-full flex-auto">
+        <p-table #tableRef class="table-grow" styleClass="flex flex-column max-w-full flex-auto" scrollHeight="flex"
+            [scrollable]="true" [totalRecords]="data.rows.length" [value]="data.rows" [columns]="data.columns"
+            [rowHover]="true" (onPage)="tablePageChange($event)" [paginator]="true" paginatorDropdownAppendTo="body"
+            [pageLinks]="5" [rowsPerPageOptions]="[5,10,25,50]" [rows]="data.pageSize"
+            (sortFunction)="tableSort($event)" [customSort]="true" (onColResize)="tableColumnResize($event)"
+            [resizableColumns]="true" columnResizeMode="expand" (onColReorder)="tableColumnReorder($event)"
+            [reorderableColumns]="true" selectionMode="single" [(selection)]="data.selectedRow"
+            [metaKeySelection]="true" (onRowSelect)="tableRowSelect($event)"
+            [(contextMenuSelection)]="data.contextMenuSelectedRow"
+            (onContextMenuSelect)="tableContextMenuSelect($event)" [dataKey]="data.dataKey"
+            [expandedRowKeys]="data.group.expandedRowKeys" rowGroupMode="subheader" [groupRowsBy]="data.group.field"
+            [ngClass]="{'table-fixed': data.tableWidth > 0, 'no-caption': !captionTemplate$()}">
+            <ng-template pTemplate="caption">
+                <ng-container *ngTemplateOutlet="captionTemplate$();"></ng-container>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    @for (col of columns; track $index){
+                    <th [id]="col.field" [pSortableColumn]="col.field" [pSortableColumnDisabled]="data.group.field"
+                        pResizableColumn pReorderableColumn>
+                        <div class="{{col.headerCell.styleClass}}">
+                            {{col.header}}
+                            @if(!data.group.field){
+                            <p-sortIcon class="inline-flex" [field]="col.field" />
+                            }
+                            <p-columnFilter class="inline-flex" type="text" [field]="col.field" display="menu" />
+                        </div>
+                    </th>
+                    }
+                </tr>
+            </ng-template>
+            @if(data.group.field){
+            <ng-template pTemplate="groupheader" let-groupRow let-columns="columns" let-rowIndex="rowIndex"
+                let-expanded="expanded">
+                @if(!isLastRowOfPage(rowIndex) && getGroupMasterRow(groupRow); as rowData){
+                <tr [pSelectableRow]="rowData" [pSelectableRowDisabled]="!data.allowSelect" [pContextMenuRow]="rowData"
+                    [pContextMenuRowDisabled]="!data.allowSelect" (dblclick)="tableRowDoubleClick($event, rowData)">
+                    @for (col of columns; track $index){
+                    <td [ngClass]="{'highlight-cell': rowData[col.formattedField].highlight}">
+                        <div class="flex align-items-center">
+                            @if($index === 0) {
+                            <div class="w-2rem mr-2">
+                                @if(calculateGroupRowCount(rowData[data.group.field]) > 1) {
+                                <button type="button" pButton pRipple [pRowToggler]="rowData" size="small"
+                                    class="p-button-text p-button-rounded p-button-plain h-2rem w-2rem -my-1"
+                                    [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                                    (dblclick)="$event.stopPropagation()"></button>
+                                }
+                            </div>
+                            }
+                            <div
+                                class="white-space-nowrap text-overflow-ellipsis {{rowData[col.formattedField].styleClass}}">
+                                {{rowData[col.formattedField].formattedValue}}
+                            </div>
+                        </div>
+                    </td>
+                    }
+                </tr>
+                }
+            </ng-template>
+            <ng-template pTemplate="rowexpansion" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+                @if(!isGroupMasterRow(rowData)) {
+                <tr [pSelectableRow]="rowData" [pSelectableRowDisabled]="!data.allowSelect" [pContextMenuRow]="rowData"
+                    [pContextMenuRowDisabled]="!data.allowSelect"
+                    (dblclick)="data.allowSelect ? tableRowDoubleClick($event, rowData): undefined" class="group-row">
+                    @for (col of columns; track $index){
+                    <td [ngClass]="{'highlight-cell': rowData[col.formattedField].highlight}">
+                        <div class="flex align-items-center">
+                            @if($index === 0) {
+                            <div class="w-2rem mr-2">&nbsp;</div>
+                            }
+                            <div
+                                class="white-space-nowrap text-overflow-ellipsis {{rowData[col.formattedField].styleClass}}">
+                                {{rowData[col.formattedField].formattedValue}}
+                            </div>
+                        </div>
+                    </td>
+                    }
+                </tr>
+                }
+            </ng-template>
+            }
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr [pSelectableRow]="rowData" [pSelectableRowDisabled]="!data.allowSelect" [pContextMenuRow]="rowData"
+                    [pContextMenuRowDisabled]="!data.allowSelect"
+                    (dblclick)="data.allowSelect ? tableRowDoubleClick($event, rowData): undefined">
+                    @for (col of columns; track $index){
+                    <td [ngClass]="{'highlight-cell': rowData[col.formattedField].highlight}">
+                        <div
+                            class="white-space-nowrap text-overflow-ellipsis {{rowData[col.formattedField].styleClass}}">
+                            {{rowData[col.formattedField].formattedValue}}
+                        </div>
+                    </td>
+                    }
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+}
+}

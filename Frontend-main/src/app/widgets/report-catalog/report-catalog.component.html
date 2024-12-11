@@ -1,0 +1,5 @@
+<p-tree #treeRef [value]="reportNodeValues" [(selection)]="selectedReportNode"
+        (selectionChange)="onSelectionChange($event)" [loading]="loading$()" [filter]="true"
+        filterPlaceholder="Filter by name" styleClass="border-none p-tree hide-toggler" class="flex w-full"
+        selectionMode="single" [metaKeySelection]="true">        
+</p-tree>

@@ -1,0 +1,25 @@
+src/
+├── app/
+│   ├── auth/
+│   │   ├── components/
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   │   └── confirm-email/
+│   │   ├── services/
+│   │   │   └── auth.service.ts
+│   │   ├── store/
+│   │   │   ├── actions/
+│   │   │   ├── reducers/
+│   │   │   ├── selectors/
+│   │   │   └── effects/
+│   │   └── auth.routes.ts
+│   ├── core/
+│   │   ├── guards/
+│   │   │   └── auth.guard.ts
+│   │   └── interceptors/
+│   │       └── auth.interceptor.ts
+│   ├── app.component.ts
+│   ├── app.routes.ts
+│   └── main.ts
+├── assets/
+└── environments/

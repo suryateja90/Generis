@@ -1,0 +1,26 @@
+<!-- src/app/auth/components/confirm-email/confirm-email.component.html -->
+<div class="surface-ground flex align-items-center justify-content-center min-h-screen overflow-hidden">
+  <div class="flex flex-column w-full align-items-center justify-content-center m-4 sm:m-6">
+    <img src="assets/layout/images/{{layoutService.config().colorScheme === 'light' ? 'logo-dark' : 'logo-white'}}.svg"
+         alt="Generis logo" class="mb-5 w-6rem flex-shrink-0">
+    <div style="border-radius:56px; padding:0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%);"
+         class="flex flex-column w-full md:w-auto">
+      <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius:53px">
+        <div class="text-center mb-5 w-25rem">
+          <div class="text-900 text-3xl font-medium mb-3">Confirm Email</div>
+          <span class="text-600 font-medium">{{ info }}</span>
+        </div>
+        <div class="flex flex-column align-items-center mt-8">
+          @if (loading) {
+          <p-progressSpinner styleClass="w-4rem h-4rem" ariaLabel="loading" />
+          }
+          @else {
+          <div class="flex align-items-center h-4rem">
+            <p>{{ message }}</p>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

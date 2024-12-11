@@ -1,0 +1,64 @@
+<div class="layout-topbar">
+    <a class="layout-topbar-logo" routerLink="">
+        <img src="assets/layout/images/{{layoutService.config().colorScheme === 'light' ? 'logo-dark' : 'logo-white'}}.svg"
+            alt="logo">
+        <span>GEM</span>
+    </a>
+
+    <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
+        <i class="pi pi-bars"></i>
+    </button>
+
+    <button #topbarmenubutton class="p-link layout-topbar-menu-button layout-topbar-button"
+        (click)="layoutService.showTopbarMenu()">
+        <i class="pi pi-ellipsis-v"></i>
+    </button>
+
+
+    <div #topbarmenu class="layout-topbar-menu"
+        [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.topbarMenuVisible}">
+
+        @if( connected$() ) {
+        <button class="p-link layout-topbar-button" (click)="onDisconnect()" pTooltip="Disconnect"
+            tooltipPosition="left" [tooltipDisabled]="layoutService.state.topbarMenuVisible">
+            <i class="pi pi-stop-circle"></i>
+            <span>Disconnect</span>
+        </button>
+        } @else {
+        <button class="p-link layout-topbar-button" (click)="onConnect()" pTooltip="Connect" tooltipPosition="left"
+            [tooltipDisabled]="layoutService.state.topbarMenuVisible">
+            <i class="pi pi-play-circle"></i>
+            <span>Connect</span>
+        </button>
+        }
+
+        <p-splitButton appendTo="body" icon="pi {{(isDraggable$() ? 'pi-objects-column' : 'pi-microsoft')}}"
+            label="{{(isDraggable$() ? 'Finish adjusting layout' : 'Adjust layout')}}" [model]=" adjustLayoutItems"
+            [rounded]="true" [text]="true" [plain]="true"
+            tooltip="{{(isDraggable$() ? 'Finish adjusting layout' : 'Adjust layout')}}"
+            [tooltipOptions]="{tooltipPosition: 'left', disabled: layoutService.state.topbarMenuVisible}"
+            [menuButtonDisabled]="!isDraggable$()" (onClick)="onSetDraggable(!isDraggable$())"
+            styleClass="p-button-plain layout-topbar-split-button"></p-splitButton>
+
+        <button class="p-link layout-topbar-button" pTooltip="{{currentDateTime$()}}" tooltipPosition="left"
+            [tooltipDisabled]="layoutService.state.topbarMenuVisible">
+            <i class="pi pi-clock"></i>
+            <span>{{currentDateTime$()}}</span>
+        </button>
+        <button class="p-link layout-topbar-button" (click)="onUserProfileButtonClick()" pTooltip="User profile"
+            tooltipPosition="left" [tooltipDisabled]="layoutService.state.topbarMenuVisible">
+            <i class="pi pi-user"></i>
+            <span>User profile</span>
+        </button>
+        <button class="p-link layout-topbar-button" (click)="onConfigButtonClick()" pTooltip="Settings"
+            tooltipPosition="left" [tooltipDisabled]="layoutService.state.topbarMenuVisible">
+            <i class="pi pi-cog"></i>
+            <span>Settings</span>
+        </button>
+        <button class="p-link layout-topbar-button" (click)="onLogout($event)" pTooltip="Logout" tooltipPosition="left"
+            [tooltipDisabled]="layoutService.state.topbarMenuVisible">
+            <i class="pi pi-sign-out"></i>
+            <span>Logout</span>
+        </button>
+    </div>
+</div>

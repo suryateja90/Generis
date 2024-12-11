@@ -1,0 +1,50 @@
+@if (loading$()) {
+<div class="flex w-full align-items-center justify-content-center min-h-5rem">
+    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+</div>
+}
+@else {
+<form class="flex flex-column w-full gap-2" [formGroup]="reportForm"
+    [ngClass]="{'mt-2': layoutService.config().inputStyle === 'outlined'}">
+    <div class="flex w-full gap-2">
+        <p-floatLabel class="flex-auto">
+            <input id="name" formControlName="name" placeholder="Name" pInputText class="w-full mb-1" required
+                autocomplete="none">
+            <label for="name" class="font-medium label-required">Name</label>
+        </p-floatLabel>
+        <p-floatLabel>
+            <input id="database" formControlName="database" placeholder="Database" pInputText class="w-full mb-1"
+                required autocomplete="none">
+            <label for="database" class="font-medium label-required">Database</label>
+        </p-floatLabel>
+        <div class="align-self-center mb-1">
+            <p-toolbar styleClass="surface-card p-0">
+                <div class="p-toolbar-group-end gap-2">
+                    <button type="button" pButton pRipple icon="pi pi-plus" pTooltip="Add" tooltipPosition="left"
+                        [disabled]="reportsLoading$()" (click)="onAdd()"></button>
+                    <button type="button" pButton pRipple icon="pi pi-save" pTooltip="Save" tooltipPosition="left"
+                        [disabled]="reportsLoading$() || reportForm.invalid" (click)="onSave()"></button>
+                    <button type="button" pButton pRipple icon="pi pi-clone" pTooltip="Save As" tooltipPosition="left"
+                        [disabled]="reportsLoading$() || !reportId" (click)="onSaveAs()"></button>
+                    <button type="button" pButton pRipple icon="pi pi-trash" pTooltip="Delete" tooltipPosition="left"
+                        [disabled]="reportsLoading$() || !reportId" (click)="onDelete()"></button>
+                    <button type="button" pButton pRipple icon="pi pi-refresh" pTooltip="Refresh" tooltipPosition="left"
+                        [disabled]="reportsLoading$()" (click)="onRefresh()"></button>
+                </div>
+            </p-toolbar>
+        </div>
+    </div>
+    <div class="flex flex-auto w-full gap-2 relative">
+        <p-floatLabel class="query-area flex-auto">
+            <textarea class="w-full" id="query" formControlName="query" placeholder="Query" pInputTextarea required
+                (keydown.control.enter)="onActionCtrlEnter()">
+            </textarea>
+            <label for="query" class="font-medium label-required">Query</label>
+            <button type="button" #actionButtonRef pButton pRipple class="align-self-end action-button"
+                icon="pi pi-arrow-up" pTooltip="Save & Refresh" tooltipPosition="left" [rounded]="true"
+                [disabled]="reportsLoading$()" (click)="onActionClick()">
+            </button>
+        </p-floatLabel>
+    </div>
+</form>
+}

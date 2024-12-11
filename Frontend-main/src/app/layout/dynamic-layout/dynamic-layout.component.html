@@ -1,0 +1,42 @@
+@if( layout$(); as layout ) {
+<ktd-grid #gridRef [compactType]="compactType" [cols]="cols" [rowHeight]="rowHeight" [layout]="layout"
+    [draggable]="false" [gap]="gap" (layoutUpdated)="onLayoutUpdated($event)">
+    @for (item of layout; track item.id) {
+    <ktd-grid-item [id]="item.id" [draggable]="isDraggable$()" [resizable]="isDraggable$()" class="ktd-grid-item">
+        <div class="card flex h-full" [ngClass]="{'pb-0': item.h <= 1, 'pr-0': item.w <= 1}">
+            @if(isDraggable$()) {
+            <button class="configure-button" type="button" pButton pRipple icon="pi pi-equals font-bold"
+                [rounded]="true" [text]="true" [plain]="true" size="small" pTooltip="Configure widget"
+                tooltipPosition="left" (click)="onConfigureItem(item)"></button>
+            <button class="remove-button" type="button" pButton pRipple icon="pi pi-times font-bold" [rounded]="true"
+                [text]="true" [plain]="true" size="small" pTooltip="Remove widget" tooltipPosition="left"
+                (click)="onRemoveItem(item)"></button>
+            }
+            <ng-container #dynamicContainer></ng-container>
+        </div>
+        <ng-template ktdGridItemPlaceholder>
+            <!-- Custom placeholder - When a user drags or resizes a grid item, it often helps to have a visual placeholder that indicates the position and dimensions of the item as it moves -->
+            <div class="custom-placeholder" style="background-color: #1f202b; height: 100%;">
+            </div>
+        </ng-template>
+    </ktd-grid-item>
+    }
+    @empty {
+    <div>No items available</div>
+    }
+</ktd-grid>
+}
+<p-dialog header="Add Widget" [modal]="true" [(visible)]="addWidgetDialogVisible" [style]="{ minWidth: '25rem' }">
+    <span class="p-text-secondary block mb-5">Choose a widget.</span>
+    <form [formGroup]="addWidgetForm">
+        <p-floatLabel>
+            <p-dropdown styleClass="w-full" formControlName="widget" [options]="widgets$()"
+                placeholder="Select a Widget" appendTo="body" />
+            <label for="widget">Widget</label>
+        </p-floatLabel>
+        <div class="flex justify-content-end gap-2 mt-5">
+            <button type="button" pButton pRipple label="Add" [disabled]="addWidgetForm.invalid"
+                (click)="onAddItem()"></button>
+        </div>
+    </form>
+</p-dialog>

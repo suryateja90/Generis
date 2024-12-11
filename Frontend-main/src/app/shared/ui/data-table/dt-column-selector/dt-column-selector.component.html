@@ -1,0 +1,52 @@
+<button type="button" pButton pRipple icon="pi font-bold pi-list" [rounded]="true" [text]="true" [plain]="true"
+    [outlined]="true" size="small" pTooltip="Open Column Selector" tooltipPosition="left"
+    (click)="showColumnSelectorDialog()"></button>
+<p-dialog appendTo="body" [header]="(columnSelector.title ? columnSelector.title + ' - ' : '') + 'Column Selector'"
+    [modal]="true" [(visible)]="columnSelector.visible" styleClass="w-11 max-w-30rem">
+    <div class="flex flex-column gap-4">
+        <div class="relative">
+            <button class="reset-sort-action" type="button" pButton pRipple icon="pi font-bold pi-undo" [rounded]="true"
+                [text]="true" [plain]="true" [outlined]="true" size="small" pTooltip="Reset Order"
+                tooltipPosition="left" (click)="orderReset()"></button>
+            <p-orderList [value]="columnSelector.columns" [trackBy]="columnSelectorTrackBy"
+                [selection]="columnSelector.selection" [listStyle]="{ 'min-height': '16rem', 'max-height': '30rem' }"
+                [dragdrop]="true" controlsPosition="right" class="column-selector">
+                <ng-template pTemplate="header">
+                    <div class="flex align-items-center gap-4">
+                        <div class="flex flex-column sm:flex-row sm:w-13rem">
+                            <span class="overflow-hidden white-space-nowrap text-overflow-ellipsis font-bold">
+                                List of Columns
+                            </span>
+                        </div>
+                        <div class="flex align-items-center">
+                            <span class="hidden sm:inline font-italic">Visible</span>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template let-col pTemplate="item">
+                    <div class="flex flex-column sm:flex-row sm:align-items-center gap-1 sm:gap-4 py-2 px-3">
+                        <div class="flex flex-column sm:flex-row sm:w-13rem">
+                            <div class="overflow-hidden white-space-nowrap text-overflow-ellipsis font-bold">
+                                {{ col.field }}
+                            </div>
+                        </div>
+                        <div class="flex align-items-end sm:align-items-center justify-content-between gap-4">
+                            <span class="sm:hidden font-italic">Visible</span>
+                            <div class="flex align-items-center w-3rem h-2rem -mb-1 sm:mb-0 sm:pt-1"
+                                (mousedown)="$event.stopPropagation()" (click)="$event.stopPropagation()">
+                                <p-inputSwitch [(ngModel)]="col.visible" />
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </p-orderList>
+        </div>
+    </div>
+    <div class="flex justify-content-end gap-2 mt-5">
+        @if (profile$()?.role === 'ADMIN') {
+        <button type="button" pButton pRipple label="Default" [outlined]="true"
+            (click)="applyColumnSelection(true)"></button>
+        }
+        <button type="button" pButton pRipple label="Apply" (click)="applyColumnSelection(false)"></button>
+    </div>
+</p-dialog>

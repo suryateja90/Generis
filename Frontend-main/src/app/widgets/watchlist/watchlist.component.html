@@ -1,0 +1,6 @@
+<app-data-table #dataTableRef [data]="data" (pageChange)="transformer.pageChange($event)"
+    (columnResize)="transformer.columnResize($event)" (columnReorder)="transformer.columnReorder($event)">
+    <ng-template #captionTemplate>
+        <app-dt-caption [title]="title$()" [transformer]="transformer"></app-dt-caption>
+    </ng-template>
+</app-data-table>

@@ -1,0 +1,26 @@
+<h4>{{echoTitle$()}}</h4>
+@for( arrayMessage of echoArray$(); track arrayMessage ) {
+<p>{{arrayMessage}}</p>
+}
+
+@if (connected$()) {
+<p>Here the echo messages:</p>
+<ul>
+    <button pbutton="" pripple="" type="button" label="Echo" class="p-element p-ripple p-button p-component"
+        ng-reflect-label="Echo" (click)="echo()">
+        <span class="p-button-label">Echo</span><span class="p-ink" aria-hidden="true" role="presentation"></span>
+    </button>
+
+    <!-- @for will process the array of signals more efficiently because each signal update is isolated, avoiding unnecessary re-evaluation of the entire list. -->
+    @for( messageSignal of echoMessagesArray$(); track messageSignal ) {
+        @let message = messageSignal();
+        @for( payload of message.payload; track $index ) {
+        <li>{{ message.type }} | {{ message.timestamp | date: 'medium' }} | {{ payload }} | | {{ message | json }}</li>
+        } @empty {
+        <div>No payloads available</div>
+        }
+    } @empty {
+    <div>No items available</div>
+    }
+</ul>
+}

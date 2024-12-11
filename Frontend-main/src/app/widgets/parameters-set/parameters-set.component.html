@@ -1,0 +1,21 @@
+<form class="flex flex-column w-full md:w-30rem" [formGroup]="parameterForm">
+    <div class="p-fluid">
+        <h5>Parameter Set</h5>
+        <label for="application">Application</label>
+        <input pInputText id="application" type="text" formControlName="application" />
+        <div class="field">
+        </div>
+        <div class="field">
+            <label for="parameter">Parameter</label>
+            <input pInputText id="parameter" type="text" formControlName="parameter" />
+        </div>
+        <div class="field">
+            <label for="value">Value</label>
+            <input pInputText id="value" type="text" formControlName="value" />
+        </div>        
+        <div class="field" style="display: flex; gap: 1rem;">
+            <button pButton label="Submit" [disabled]="!parameterForm.valid" (click)="onSubmit()"></button>        
+            <button pButton label="Default" [disabled]="!parameterForm.valid" (click)="onDefault()"></button>
+        </div>        
+    </div>
+</form>

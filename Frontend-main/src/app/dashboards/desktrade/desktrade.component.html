@@ -1,0 +1,74 @@
+<div class="grid p-fluid">
+    <!-- First Row: 6 + 6 layout -->
+    <div class="col-12 md:col-8">
+        <div class="card full-container" style="height: 100%;">
+            <h5>Watchlists</h5>
+            <p-table [value]="buyOpportunities" class="p-datatable-sm" [style]="{ 'width': '100%', 'height': '100%' }">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Price</th>
+                        <th>Volume</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData>
+                    <tr>
+                        <td>{{ rowData.symbol }}</td>
+                        <td>{{ rowData.price }}</td>
+                        <td>{{ rowData.volume }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <div class="col-12 md:col-4" style="height: 100%;">
+        <div class="card">
+            <h5>Linear Chart</h5>
+            <p-chart type="line" [data]="lineData" [options]="lineOptions"></p-chart>
+        </div>
+    </div>
+    
+    
+    <!-- Third Row: Full Width -->
+    <div class="col-4">
+        <div class="card full-container" style="height: 100%;">
+            <h5>Buy Board</h5>
+            <div class="flex flex-wrap gap-2" style="height: 100%;"></div>
+        </div>
+    </div>
+
+    <!-- Fourth Row: Full Width -->
+    <div class="col-4">
+        <div class="card full-container" style="height: 100%;">
+            <h5>Sell Board</h5>
+            <div class="flex flex-wrap gap-2" style="height: 100%;"></div>
+        </div>
+    </div>
+
+    <div class="col-4">
+        <div class="card full-container" style="height: 100%;">
+            <h5>Time & Sales</h5>
+            <div class="flex flex-wrap gap-2" style="height: 100%;"></div>
+        </div>
+    </div>
+
+    <!-- Second Row: Full Width -->
+    <div class="col-6">
+        <div class="card full-container" style="height: 100%;">
+            <h5>Blotter</h5>
+            <div class="flex flex-wrap gap-2" style="height: 100%;"></div>
+        </div>
+    </div>
+
+    <!-- Second Row: Full Width -->
+    <div class="col-6">
+        <div class="card full-container" style="height: 100%;">
+            <h5>Balance</h5>
+            <div class="flex flex-wrap gap-2" style="height: 100%;"></div>
+        </div>
+    </div>
+
+
+
+</div>

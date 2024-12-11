@@ -1,0 +1,12 @@
+<app-data-table #dataTableRef [data]="data" (pageChange)="transformer.pageChange($event)"
+    (columnResize)="transformer.columnResize($event)" (columnReorder)="transformer.columnReorder($event)">
+    <ng-template #captionTemplate>
+        <app-dt-caption [title]="title$()" [transformer]="transformer">
+            <ng-template #additionalActionsTemplate>
+                <button type="button" pButton pRipple icon="pi font-bold pi-plus" [rounded]="true" [text]="true"
+                    [plain]="true" [outlined]="true" size="small" pTooltip="Add" tooltipPosition="left"
+                    (click)="showDialog('Add')"></button>
+            </ng-template>
+        </app-dt-caption>
+    </ng-template>
+</app-data-table>

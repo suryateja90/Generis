@@ -1,0 +1,55 @@
+<p-sidebar he="T" [(visible)]="visible" position="right" [transitionOptions]="'.3s cubic-bezier(0, 0, 0.2, 1)'"
+           styleClass="userprofile-sidebar w-20rem">
+  <ng-template pTemplate="header">
+    <div class="flex flex-auto align-items-center">
+      <h4 class="mb-0">User Profile</h4>
+    </div>
+  </ng-template>
+  @if (profile$()) {
+  <div class="flex flex-column gap-3">
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Id:</span>
+      <span>{{ profile$().id }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Name:</span>
+      <span>{{ profile$().name }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Email:</span>
+      <span>{{ profile$().username }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Company:</span>
+      <span>{{ profile$().company }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Area:</span>
+      <span>{{ profile$().area }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Phone:</span>
+      <span>{{ profile$().phone }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Role:</span>
+      <span>{{ profile$().role }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Level:</span>
+      <span>{{ profile$().level }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Privileges:</span>
+      <span>{{ profile$().privileges }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="font-semibold text-primary">Ambiente URL ID:</span>
+      <span>{{ profile$().ambiente_url_id }}</span>
+    </div>
+  </div>
+  }
+  @else if (!(loading$())) {
+  <p>No profile data available.</p>
+  }
+</p-sidebar>

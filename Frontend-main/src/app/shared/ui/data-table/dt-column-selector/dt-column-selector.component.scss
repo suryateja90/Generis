@@ -1,0 +1,22 @@
+::ng-deep .column-selector {
+    .p-orderlist {
+        .p-orderlist-list-container {
+            width: 0;
+        }
+        .p-orderlist-header {
+            padding: 0.75rem 1rem;
+        }
+        .p-orderlist-item {
+            padding: 0;
+        }
+        .p-orderlist-controls {
+            padding-left: 1.5rem;
+            padding-right: 0;
+        }
+    }
+}
+
+.reset-sort-action {
+    position: absolute;
+    right: 0;
+}

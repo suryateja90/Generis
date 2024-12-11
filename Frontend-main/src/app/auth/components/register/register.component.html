@@ -1,0 +1,106 @@
+<!-- src/app/auth/components/register/register.component.html -->
+<div class="surface-ground flex align-items-center justify-content-center min-h-screen overflow-hidden">
+  <div class="flex flex-column w-full align-items-center justify-content-center m-4 sm:m-6">
+    <img src="assets/layout/images/{{layoutService.config().colorScheme === 'light' ? 'logo-dark' : 'logo-white'}}.svg"
+      alt="Generis logo" class="mb-5 w-6rem flex-shrink-0">
+    <div
+      style="border-radius:56px; padding:0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%);"
+      class="flex flex-column w-full md:w-auto">
+      <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius:53px">
+        <div class="text-center mb-5">
+          <div class="text-900 text-3xl font-medium mb-3">Register</div>
+          <span class="text-600 font-medium">Create your account</span>
+        </div>
+        <form class="flex flex-column w-full md:w-30rem" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <p-floatLabel class="mt-4 mb-1">
+            <input id="name" formControlName="name" placeholder="Name" pInputText class="w-full" autocomplete="none">
+            <label for="name" class="font-medium">Name</label>
+          </p-floatLabel>
+
+          <p-floatLabel class="mt-4 mb-1">
+            <input id="company" formControlName="company" placeholder="Company" pInputText class="w-full"
+              autocomplete="none">
+            <label for="company" class="font-medium">Company</label>
+          </p-floatLabel>
+
+          <p-floatLabel class="mt-4 mb-1">
+            <input id="area" formControlName="area" placeholder="Area/Division" pInputText class="w-full"
+              autocomplete="none">
+            <label for="area" class="font-medium">Area/Division</label>
+          </p-floatLabel>
+
+          <p-floatLabel class="mt-4 mb-1">
+            <input id="phone" formControlName="phone" placeholder="Phone" pInputText class="w-full" autocomplete="none">
+            <label for="phone" class="font-medium">Phone</label>
+          </p-floatLabel>
+
+          <p-floatLabel class="mt-4 mb-1">
+            <input id="email" formControlName="username" type="email" placeholder="Email" pInputText class="w-full"
+              required autocomplete="username">
+            <label for="email" class="font-medium label-required">Email</label>
+          </p-floatLabel>
+          <div class="flex flex-column mb-1 p-float-label-error">
+            @if (registerForm.get('username')?.touched || registerForm.get('username')?.dirty) {
+            @if (registerForm.get('username')?.hasError('required')) {
+            <small class="p-error">
+              Email is required
+            </small>
+            }
+            @if (registerForm.get('username')?.hasError('email')) {
+            <small class="p-error">
+              Enter a valid email
+            </small>
+            }
+            }
+          </div>
+
+          <p-floatLabel class="mt-4 mb-1">
+            <p-password inputId="password" formControlName="password" placeholder="Password" [toggleMask]="true"
+              styleClass="w-full" inputStyleClass="w-full" autocomplete="new-password" required></p-password>
+            <label for="password" class="font-medium label-required">Password</label>
+          </p-floatLabel>
+          <div class="flex flex-column mb-1 p-float-label-error">
+            @if (registerForm.get('password')?.touched || registerForm.get('password')?.dirty) {
+            @if (registerForm.get('password')?.hasError('required')) {
+            <small class="p-error">
+              Password is required
+            </small>
+            }
+            @if (registerForm.get('password')?.hasError('minlength')) {
+            <small class="p-error">
+              Minimum 6 characters
+            </small>
+            }
+            @if (registerForm.get('password')?.hasError('pattern')) {
+            <small class="p-error">
+              Password must contain at least one number and one lowercase letter
+            </small>
+            }
+            }
+          </div>
+
+          <!-- Error Message -->
+          @if (error$(); as error) {
+          <p-message styleClass="w-full mt-4" severity="error" [text]="error"></p-message>
+          }
+
+          <!-- Form Validation Message -->
+          @if (registerForm.invalid) {
+          <div class="p-error text-sm mt-4 -mb-3">
+            Please fill out all required fields correctly to submit the form.
+          </div>
+          }
+
+          <button pButton pRipple class="w-full mt-5 text-xl" label="Register" type="submit"
+            [disabled]="registerForm.invalid || loading$()" [loading]="loading$()">
+          </button>
+        </form>
+        <div class="flex align-items-center justify-content-between mt-6 gap-5">
+          Already have an account?
+          <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)"
+            [routerLink]="['/auth/login']">Log in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

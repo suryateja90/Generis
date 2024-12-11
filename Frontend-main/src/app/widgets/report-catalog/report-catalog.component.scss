@@ -1,0 +1,35 @@
+:host {
+    display: flex;
+    width: 100%;
+    height: 100%; // Ensure the host takes full available space.
+}
+
+:host ::ng-deep .p-tree.hide-toggler {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0px;
+
+    .p-tree-wrapper {
+        flex: 1 1 auto; // Allow the wrapper to grow within the available space.
+        overflow: auto; // Enable scrolling when content exceeds the available height.
+    }
+
+    .p-tree-container {
+        width: 100%; // Ensure the container uses the full width.
+    }
+
+    .p-tree-filter-container {
+        margin-bottom: 0.125rem;
+        padding: 0.25rem;
+    }
+
+    .p-tree-empty-message {
+        padding: 0.5rem;
+        margin-left: 0.5rem;
+    }
+
+    .p-tree-toggler {
+        width: 0.5rem; // Keep a small visible toggler.
+    }
+}

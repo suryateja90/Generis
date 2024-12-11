@@ -1,0 +1,49 @@
+<h4>Profile Widget</h4>
+
+@if (profile$()) {
+<ul>
+    <li>
+        <strong>Id:</strong>
+        <span>{{ profile$().id }}</span>
+    </li>
+    <li>
+        <strong>Name:</strong>
+        <span>{{ profile$().name }}</span>
+    </li>
+    <li>
+        <strong>Email:</strong>
+        <span>{{ profile$().username }}</span>
+    </li>
+    <li>
+        <strong>Company:</strong>
+        <span>{{ profile$().company }}</span>
+    </li>
+    <li>
+        <strong>Area:</strong>
+        <span>{{ profile$().area }}</span>
+    </li>
+    <li>
+        <strong>Phone:</strong>
+        <span>{{ profile$().phone }}</span>
+    </li>
+    <li>
+        <strong>Role:</strong>
+        <span>{{ profile$().role }}</span>
+    </li>
+    <li>
+        <strong>Level:</strong>
+        <span>{{ profile$().level }}</span>
+    </li>
+    <li>
+        <strong>Privileges:</strong>
+        <span>{{ profile$().privileges }}</span>
+    </li>
+    <li>
+        <strong>Ambiente URL ID:</strong>
+        <span>{{ profile$().ambiente_url_id }}</span>
+    </li>
+</ul>
+} 
+@else if (!(loading$())) {
+<p>No profile data available.</p>
+}

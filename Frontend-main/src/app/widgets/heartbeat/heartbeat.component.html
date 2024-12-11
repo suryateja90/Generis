@@ -1,0 +1,10 @@
+<h4>Heartbeat Widget</h4>
+@if (connected$()) {
+    <p>Here the hearbeats:</p>
+    @if (heartbeatMessage$()) {
+    <p>Latest Message: {{ heartbeatMessage$().timestamp | date: 'medium' }}</p>
+    }
+    @else {
+    <p>Empty</p>
+    }
+}

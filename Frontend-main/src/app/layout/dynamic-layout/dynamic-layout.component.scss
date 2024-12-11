@@ -1,0 +1,29 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+}
+
+.ktd-grid-item {
+    min-width: 30px;
+}
+
+.remove-button {
+    position: absolute;
+    top: 5px; /* Adjust as needed */
+    right: 5px; /* Adjust as needed */
+    z-index: 1; /* Ensure it appears above other elements */
+    padding: 0.25rem;
+    height: 1.75rem;
+    width: 1.75rem;
+}
+
+.configure-button {
+    position: absolute;
+    top: 5px; /* Adjust as needed */
+    left: 5px; /* Adjust as needed */
+    z-index: 1; /* Ensure it appears above other elements */
+    padding: 0.25rem;
+    height: 1.75rem;
+    width: 1.75rem;
+}

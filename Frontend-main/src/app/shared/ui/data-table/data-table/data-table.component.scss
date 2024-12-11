@@ -1,0 +1,97 @@
+:host {
+    display: flex;
+    width: 100%;
+    height: 100%; // Ensure the host takes full available space.
+}
+
+:host ::ng-deep p-table.table-grow {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    width: 0px;
+    overflow-x: auto;
+
+    .p-datatable .p-datatable-header {
+        border-color: var(--surface-border);
+        border-top-width: 1px;
+    }
+
+    .p-datatable-wrapper {
+        flex: 1 1 auto;
+        height: 100%;
+        overflow-y: auto;
+
+        table tr {
+            @media (min-width: 770px) {
+                th:first-child,
+                td:first-child {
+                    padding-left: 1rem !important;
+                }
+
+                th:last-child,
+                td:last-child {
+                    padding-right: 1rem !important;
+                }
+            }
+            th {
+                .p-icon-wrapper {
+                    display: inline-flex;
+                }
+            }
+        }
+
+        .highlight-cell {
+            animation: highlight-animation 1s ease-in-out;
+        }
+
+        .group-row {
+            &:not(.p-highlight):not(:hover) {
+                background-color: var(--surface-50) !important;
+            }
+        }
+    }
+
+    .p-paginator {
+        border-color: var(--surface-border);
+        border-top-width: 1px;
+
+        p-dropdown {
+            @media (max-width: 769px) {
+                display: block;
+            }
+
+            &::before {
+                content: "Rows per page";
+                margin-left: 0rem;
+                margin-right: 0.5rem;
+
+                @media (min-width: 770px) {
+                    margin-left: 2rem;
+                }
+            }
+        }
+    }
+}
+
+:host ::ng-deep p-table.table-fixed {
+    .p-datatable-table {
+        table-layout: fixed;
+    }
+}
+
+:host ::ng-deep p-table.no-caption {
+    .p-datatable .p-datatable-header {
+        padding: 0;
+        border-top-width: 0;
+    }
+}
+
+/* To remove the highlight after a certain time, we can use CSS animations */
+@keyframes highlight-animation {
+    0% {
+        background-color: #ffffc5;
+    }
+    100% {
+        background-color: unset;
+    }
+}

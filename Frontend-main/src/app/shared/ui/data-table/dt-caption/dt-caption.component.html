@@ -1,0 +1,23 @@
+<div class="flex align-items-center justify-content-between">
+    <div>
+        @if(title$(); as title) {
+        <span class="text-xl font-bold">{{ title }}&nbsp;</span>
+        }
+    </div>
+    <div class="flex align-items-center gap-2">
+        <ng-container *ngTemplateOutlet="additionalActionsTemplate$();"></ng-container>
+        @if(transformer$(); as ts) {
+        <app-dt-column-selector [title]="title$()" [transformer]="ts"></app-dt-column-selector>
+        <button type="button" pButton pRipple icon="pi font-bold pi-undo" [rounded]="true" [text]="true" [plain]="true"
+            [outlined]="true" size="small" pTooltip="Default Layout" tooltipPosition="left"
+            (click)="ts.useDefaultTableState()"></button>
+        <button type="button" pButton pRipple icon="pi font-bold pi-eraser" [rounded]="true" [text]="true"
+            [plain]="true" [outlined]="true" size="small" pTooltip="Hide Empty Columns" tooltipPosition="left"
+            (click)="ts.hideEmptyColumns()"></button>
+        <p-splitButton appendTo="body" icon="pi font-bold pi-refresh" [model]="refreshBtnItems" [rounded]="true"
+            [text]="true" [plain]="true" [outlined]="true" size="small" tooltip="Reset Layout"
+            [tooltipOptions]="{tooltipPosition: 'left'}" (onClick)="ts.resetTableState()"
+            styleClass="p-button-plain"></p-splitButton>
+        }
+    </div>
+</div>
