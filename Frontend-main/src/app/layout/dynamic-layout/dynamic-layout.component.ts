@@ -15,6 +15,7 @@ import { performDynamicLayoutAction, setParameter } from 'src/app/store/paramete
 import { selectApplicationParameters, selectDynamicLayoutAction, selectIsDraggable, selectParametersLoading } from 'src/app/store/parameters/parameters.selectors';
 import { SeguridadParameterModel } from 'src/shared/models/seguridad-parameter.model';
 import { ComponentRegistry, DynamicLayoutItem } from './dynamic-layout.model';
+import { ReportingDataService } from 'src/app/shared/ui/data-table/services/reporting-data.service';
 
 @Component({
   selector: 'app-dynamic-layout',
@@ -22,7 +23,7 @@ import { ComponentRegistry, DynamicLayoutItem } from './dynamic-layout.model';
   styleUrl: './dynamic-layout.component.scss',
   standalone: true,
   imports: [NgClass, KtdGridComponent, KtdGridItemComponent, ButtonModule, RippleModule, TooltipModule, DialogModule, ReactiveFormsModule, FloatLabelModule, DropdownModule],
-  providers: [DatePipe] // Provide DatePipe here
+  providers: [DatePipe, ReportingDataService] // Provide DatePipe here
 })
 export class DynamicLayoutComponent {
 

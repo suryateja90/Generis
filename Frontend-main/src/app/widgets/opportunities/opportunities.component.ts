@@ -1,10 +1,18 @@
-import { Component, computed, effect, input, Pipe, PipeTransform, signal, Signal, viewChild, WritableSignal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, input, Pipe, PipeTransform, signal, Signal, viewChild, WritableSignal } from '@angular/core';
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
 import { Table, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { ExtractSignalPipe } from 'src/app/utils/extract-signal-pipe';
 import { CommonModule, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
+import { setData } from 'src/app/shared/ui/data-table/data-table/data-table.models';
+import { DataTableComponent } from 'src/app/shared/ui/data-table/data-table/data-table.component';
+import { sortFn } from 'src/app/shared/ui/data-table/data-table/data-table.utils';
+import { DataTransformerService } from 'src/app/shared/ui/data-table/services/data-transformer.service';
+import { ReportingDataService } from 'src/app/shared/ui/data-table/services/reporting-data.service';
+import { WebsocketMessageService } from 'src/app/shared/ui/data-table/services/websocket-message.service';
+import { RippleModule } from 'primeng/ripple';
+import { DtCaptionComponent } from 'src/app/shared/ui/data-table/dt-caption/dt-caption.component';
 
 // stock watchlist using Angular 18 Signals: Simple, Computed and Wrtitable
 
@@ -28,144 +36,112 @@ class Stock {
 @Component({
   selector: 'app-opportunities',
   standalone: true,
-  imports: [TableModule, ButtonModule, TooltipModule, ExtractSignalPipe, CommonModule, ],
-  providers: [PercentPipe, DecimalPipe, DatePipe],
+  imports: [DataTableComponent, DtCaptionComponent, ButtonModule, RippleModule, TooltipModule],
+  providers: [
+    DataTransformerService, ReportingDataService, WebsocketMessageService
+  ],
   templateUrl: './opportunities.component.html',
-  styleUrl: './opportunities.component.scss'
+  styles: [`
+    :host {
+      display: flex;
+      width: 100%;
+      height: 100%; // Ensure the host takes full available space.
+    }
+  `]
 })
 @RegisterWidget('app-opportunities')
 export class OpportunitiesComponent {
 
-  parameters$ = input.required<any>({ alias: 'parameters' });
-  Title$ = computed(() => this.parameters$()?.Title);
+  public parameters$ = input.required<any>({ alias: 'parameters' });
 
-  loading$ = signal<boolean>(false);
-  
-  cols = [ 
-    { field: "symbol", header: "Symbol" },
-    { field: "volume", header: "Volume" },
-    { field: "price", header: "Price" },
-    { field: "open", header: "Open" },
-    { field: "change", header: "%" }
-  ] as const ;  
-  
-  // Using a Map for quick lookup, insertion, and deletion
-  private stockSymbols: WritableSignal<Record<string, Stock>> = signal({});
+  public data = setData();
 
-  // Computed signal to convert Map to an array for iteration in the template
-  data = computed(() => Object.values(this.stockSymbols()));
+  public defaultParameters: any = {
+    reportTitle: 'Oppurtunity Report',
+    dataKey: 'f11_clordid',
+    // groupByField: 'master',
+    // groupingFunction: (row: unknown) => row['f11_clordid']?.split('.')?.[0],
+    // groupingSortField: 'f11_clordid',
+    fixedReportKey: 1010,
+    websocketMessageType: 'Oppurtunity',
+  };
 
-  private tableRef$ = viewChild('tableRef', { read: Table });
+  public title$ = computed<string>(() => this.parameters$ ? this.parameters$()?.reportTitle : undefined);
 
-  // ---------------------------------------------------------------------------------------------------------
-  constructor() {
+  private groupByField$ = computed<string>(() => this.parameters$()?.groupByField);
+  private groupingFunction$ = computed<(row: unknown) => {}>(() => this.parameters$()?.groupingFunction);
+  private groupingSortField$ = computed<string>(() => this.parameters$()?.groupingSortField);
 
-    this.addStock();
-    this.addStock();
-    this.addStock();
-    
-    // Start automatic price updates
-    setInterval(() => this.updateRandomRecord(), 618);
-  }
-  
-  // ---------------------------------------------------------------------------------------------------------
-  // Add a new stock dynamically
-  addStock() {
-    
-    // create a random name of four letters
-    const newSymbol = Array.from({ length: 3 }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26))).join('');
-    const random = Math.random();
-    const newPrice = (Math.floor(random * 900000) + 100) / 100;
-    const newVolume = Math.floor(random * 10000) + 1;
+  private dataTableRef$ = viewChild('dataTableRef', { read: DataTableComponent });
 
-    this.stockSymbols.update((stocks: Record<string, Stock>) => {
-      const newStocks = { ...stocks }; // Create a shallow copy of the original Recor
-      newStocks[newSymbol] = new Stock(newSymbol, newVolume, newPrice);
-      return newStocks;
-    });
+  private destroyRef = inject(DestroyRef);
+
+  // --------------------------------------------------------------------------
+  constructor(
+    public transformer: DataTransformerService,
+    private reportingDataService: ReportingDataService,
+    private websocketMessageService: WebsocketMessageService,
+  ) {
   }
 
-  // ---------------------------------------------------------------------------------------------------------
-  // Remove a stock by its symbol
-  removeStock(symbol: string) {
-    this.stockSymbols.update((stocks: Record<string, Stock>) => {
-      const newStocks = { ...stocks }; // Create a shallow copy of the original Recor
-      delete newStocks[symbol];
-      return newStocks;
-    });
-  }
+  // --------------------------------------------------------------------------
+  ngOnInit(): void {
+    this.data.group.field = this.groupByField$();
 
-  // ---------------------------------------------------------------------------------------------------------  
-  updateRandomRecord() {
+    let beforeProcessingItem = undefined;
+    let beforeProcessingItems = undefined;
+    if (this.groupingFunction$() && this.data.group.field) {
+      beforeProcessingItem = (item: unknown) => {
+        item[this.data.group.field] = this.groupingFunction$()(item);
+        this.data.group.expandedRowKeys[item[this.data.group.field]] = true; // set default value for expanded
+        return item;
+      }
 
-    const stocks = this.stockSymbols();    
-    const keys = Object.keys(stocks);
-    if (keys.length) {
-      const stockKeys = Array.from(keys); // Get an array of keys
-      if (stockKeys.length) {
-        const randomSymbol = stockKeys[Math.floor(Math.random() * stockKeys.length)];
-        const stock = stocks[randomSymbol];
-        if (stock) {
-          const newPrice = Math.floor(100 * stock.price() + (Math.random() - 0.5) * 10) / 100;
-          const newVolume = Math.floor(Math.random() * 10000) + 1;
-          this.updateStock(randomSymbol, newPrice, newVolume);
+      beforeProcessingItems = (items: unknown[]) => {
+        // If a grouping sort field is specified, sort the data based on that field
+        const sortField = this.groupingSortField$();
+        if (sortField) {
+          items.sort((data1, data2) => sortFn(data1, data2, sortField, 1));
         }
       }
     }
-  }
 
-  // ---------------------------------------------------------------------------------------------------------
-  // Efficiently update the price of an existing stock
-  updateStock(name: string, newPrice: number = 0, newVolume: number = 0) {
-
-    this.stockSymbols.update(stocks => {
-
-      const stock = stocks[name];
-      if (stock) {
-        if (newPrice) stock.price.update(price => newPrice);
-        if (newVolume) stock.volume = newVolume;
-      }
-      return stocks;
-
+    this.transformer.config({
+      parameters: this.parameters$(),
+      destroyRef: this.destroyRef,
+      dataRef: this.data,
+      dataTableRef: this.dataTableRef$(),
+      beforeProcessingItem,
+      beforeProcessingItems,
+      dataLoadCompleted: this.reportingDataService.dataLoadCompleted,
+      updateReportDataItem: this.reportingDataService.updateReportDataItem,
+      setParameterForReport: this.reportingDataService.setParameterForReport,
     });
-  }
 
-  // ---------------------------------------------------------------------------------------------------------
-  clearStocks(){   
-    this.stockSymbols.set({});
-  }
-  
-  // ---------------------------------------------------------------------------------------------------------
-  customSort(event: any) {    
-  }  
-
-  // ---------------------------------------------------------------------------------------------------------
-  private sortTableData(event) {
-    event.data.sort((data1, data2) => {
-      let value1 = data1[event.field];
-      let value2 = data2[event.field];
-      let result = null;
-      if (value1 == null && value2 != null) result = -1;
-      else if (value1 != null && value2 == null) result = 1;
-      else if (value1 == null && value2 == null) result = 0;
-      else if (typeof value1 === 'string' && typeof value2 === 'string') result = value1.localeCompare(value2);
-      else result = value1 < value2 ? -1 : value1 > value2 ? 1 : 0;
-
-      return event.order * result;
+    this.reportingDataService.config({
+      parameters: this.parameters$(),
+      destroyRef: this.destroyRef,
+      data: this.transformer.processData,
+      dataLoadingStatus: this.transformer.processDataLoadingStatus,
+      error: this.transformer.processError,
+      dataOptions: this.transformer.processDataOptions,
     });
+
+    console.debug('Parameters:', this.parameters$());
+    console.debug('Transformer Data:', this.transformer.processData);
+
+    this.websocketMessageService.config({
+      parameters: this.parameters$(),
+      destroyRef: this.destroyRef,
+      data: this.transformer.upsertData
+    });
+
+    console.debug('Parameters2:', this.parameters$());
+    console.debug('Transformer Data2:', this.transformer.upsertData);
   }
 
-  // ---------------------------------------------------------------------------------------------------------
-  private resetSort() {
-    if (this.tableRef$()) {
-      this.tableRef$().sortField = null;
-      this.tableRef$().sortOrder = null;
-    }
+  // --------------------------------------------------------------------------
+  showDialog(action: string) {
+    console.debug(action);
   }
-
-  // ---------------------------------------------------------------------------------------------------------
-  onPageChange(event: any) {    
-  }
-  
-
 }

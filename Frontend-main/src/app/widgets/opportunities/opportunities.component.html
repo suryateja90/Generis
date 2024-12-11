@@ -1,40 +1,12 @@
-<div class="flex h-full w-full flex-auto">
-    <p-table #tableRef [totalRecords]="data().length" [value]="data()" [scrollable]="true" scrollHeight="flex"
-        class="table-grow" styleClass="flex flex-column max-w-full flex-auto" [paginator]="true"
-        [rowsPerPageOptions]="[5,10,25,50]" [rows]="10" (onPage)="onPageChange($event)" paginatorDropdownAppendTo="body"
-        [pageLinks]="5" (sortFunction)="customSort($event)" [customSort]="true" [loading]="loading$()">
-        <ng-template pTemplate="caption">
-            <div class="flex items-center justify-between">
-                <span class="text-xl font-bold">{{ Title$() }}</span>
-                &nbsp;&nbsp;
-                <p-button icon="pi pi-plus" rounded raised (click)="addStock()" pTooltip="Add Stock"></p-button>
-                &nbsp;&nbsp;
-                <p-button icon="pi pi-trash" rounded raised (click)="clearStocks()" pTooltip="Clear Stock" />
-            </div>
-        </ng-template>
-        <ng-template pTemplate="body" let-data>
-            <tr>
-                @for (col of cols; track $index){
-                @let field = data[col.field] | extractSignal;
-                <td class="{{ field.class }}">{{ field.value }}</td>
-                }
-                <td><p-button icon="pi pi-times" rounded raised (click)="removeStock(data.symbol)"
-                        pTooltip="Clear Stock" /></td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="header">
-            <tr>
-                @for (col of cols; track $index){
-                <th [pSortableColumn]="col.field" [style]="'width:'+(100/cols.length)+'%'">
-                    <div class="flex align-items-center text-right justify-content-end">
-                        {{col.header}}
-                        <p-sortIcon class="inline-flex" [field]="col.field" />
-                        <p-columnFilter class="inline-flex" type="text" [field]="col.field" display="menu" />
-                    </div>
-                </th>
-                }
-            </tr>
-        </ng-template>
-
-    </p-table>
-</div>
+<app-data-table #dataTableRef [data]="data" (pageChange)="transformer.pageChange($event)"
+    (columnResize)="transformer.columnResize($event)" (columnReorder)="transformer.columnReorder($event)">
+    <ng-template #captionTemplate>
+        <app-dt-caption [title]="title$()" [transformer]="transformer">
+            <ng-template #additionalActionsTemplate>
+                <button type="button" pButton pRipple icon="pi font-bold pi-plus" [rounded]="true" [text]="true"
+                    [plain]="true" [outlined]="true" size="small" pTooltip="Add" tooltipPosition="left"
+                    (click)="showDialog('Add')"></button>
+            </ng-template>
+        </app-dt-caption>
+    </ng-template>
+</app-data-table>
