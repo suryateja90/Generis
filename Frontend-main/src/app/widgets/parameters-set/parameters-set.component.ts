@@ -1,6 +1,7 @@
 import { Component, input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
+import { PrimeIcons } from 'primeng/api';
 import { ButtonDirective } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 
@@ -14,7 +15,7 @@ import { SeguridadParameterModel } from 'src/shared/models/seguridad-parameter.m
   imports: [InputTextModule, ButtonDirective, FormsModule, ReactiveFormsModule],
   templateUrl: './parameters-set.component.html'
 })
-@RegisterWidget('app-parameters-set')
+@RegisterWidget('app-parameters-set', PrimeIcons.LIST_CHECK)
 export class ParametersSetComponent implements OnInit {
 
   public parameterForm!: FormGroup<any>;

@@ -40,10 +40,10 @@
             [menuButtonDisabled]="!isDraggable$()" (onClick)="onSetDraggable(!isDraggable$())"
             styleClass="p-button-plain layout-topbar-split-button"></p-splitButton>
 
-        <button class="p-link layout-topbar-button" pTooltip="{{currentDateTime$()}}" tooltipPosition="left"
+        <button class="p-link layout-topbar-button" pTooltip="{{displayDateTime$()}}" tooltipPosition="left"
             [tooltipDisabled]="layoutService.state.topbarMenuVisible">
             <i class="pi pi-clock"></i>
-            <span>{{currentDateTime$()}}</span>
+            <span>{{displayDateTime$()}}</span>
         </button>
         <button class="p-link layout-topbar-button" (click)="onUserProfileButtonClick()" pTooltip="User profile"
             tooltipPosition="left" [tooltipDisabled]="layoutService.state.topbarMenuVisible">

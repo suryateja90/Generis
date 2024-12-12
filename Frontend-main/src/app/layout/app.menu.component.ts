@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { LayoutService } from './service/app.layout.service';
+import { Component, isDevMode, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { MenuItem } from 'primeng/api';
 
+import { performDynamicLayoutAction } from '../store/parameters/parameters.actions';
 import { AppMenuitemComponent } from './app.menuitem.component';
+import { ComponentRegistry } from './dynamic-layout/dynamic-layout.model';
+import { LayoutService } from './service/app.layout.service';
 
 @Component({
     selector: 'app-menu',
@@ -11,9 +15,14 @@ import { AppMenuitemComponent } from './app.menuitem.component';
 })
 export class AppMenuComponent implements OnInit {
 
-    model: any[] = [];
+    model: MenuItem[] = [];
 
-    constructor(public layoutService: LayoutService) { }
+    private isDevMode = isDevMode();
+
+    constructor(
+        private store: Store,
+        public layoutService: LayoutService
+    ) { }
 
     ngOnInit() {
         this.model = [
@@ -32,15 +41,24 @@ export class AppMenuComponent implements OnInit {
                 ]
             },
             {
+                label: 'Marketplace',
+                items: Object.keys(ComponentRegistry).map(name => ({
+                    label: name, icon: ComponentRegistry[name].icon ?? 'pi pi-fw pi-cog',
+                    command: () => this.store.dispatch(performDynamicLayoutAction({ action: 'add-widget', detail: name }))
+                }))
+            },
+            {
                 label: 'Layout',
+                visible: this.isDevMode,
                 items: [
                     { label: 'Adjust Layout', icon: 'pi pi-fw pi-objects-column', routerLink: ['/dashboard'] },
                     { label: 'Reset Layout', icon: 'pi pi-fw pi-table', routerLink: ['/dashboard'] },
                     { label: 'Add Widget', icon: 'pi pi-fw pi-plus-circle', routerLink: ['/dashboard'] },
-                ]                
+                ]
             },
             {
-                label: 'Marketplace',
+                label: 'Demo Components',
+                visible: this.isDevMode,
                 items: [
                     { label: 'Dashboard', icon: 'pi pi-fw pi-chart-pie', routerLink: ['/dashboard'] },
                     { label: 'Orders Ticket', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
@@ -61,20 +79,23 @@ export class AppMenuComponent implements OnInit {
                     { label: 'Misc', icon: 'pi pi-fw pi-circle', routerLink: ['/uikit/misc'] }
                 ]
             },
-            // {
-            //     label: 'Prime Blocks',
-            //     items: [
-            //         { label: 'Free Blocks', icon: 'pi pi-fw pi-eye', routerLink: ['/blocks'], badge: 'NEW' },
-            //     ]
-            // },
-            // {
-            //     label: 'Utilities',
-            //     items: [
-            //         { label: 'PrimeIcons', icon: 'pi pi-fw pi-prime', routerLink: ['/utilities/icons'] },
-            //     ]
-            // },
+            {
+                label: 'Prime Blocks',
+                visible: this.isDevMode,
+                items: [
+                    { label: 'Free Blocks', icon: 'pi pi-fw pi-eye', routerLink: ['/blocks'], badge: 'NEW' },
+                ]
+            },
+            {
+                label: 'Utilities',
+                visible: this.isDevMode,
+                items: [
+                    { label: 'PrimeIcons', icon: 'pi pi-fw pi-prime', routerLink: ['/utilities/icons'] },
+                ]
+            },
             {
                 label: 'Generis Toolset',
+                visible: this.isDevMode,
                 icon: 'pi pi-fw pi-briefcase',
                 items: [
                     {
@@ -132,6 +153,7 @@ export class AppMenuComponent implements OnInit {
             },
             {
                 label: 'AI & LLM',
+                visible: this.isDevMode,
                 items: [
                     {
                         label: 'Vendors & Licences', icon: 'pi pi-fw pi-bookmark',
@@ -174,12 +196,13 @@ export class AppMenuComponent implements OnInit {
             },
             {
                 label: 'Get Started with Generis',
+                visible: this.isDevMode,
                 items: [
                     {
                         label: 'Documentation', icon: 'pi pi-fw pi-question', routerLink: ['/documentation']
                     },
                     {
-                        label: 'Sample code', icon: 'pi pi-fw pi-search', url: ['https://github.com/primefaces/sakai-ng'], target: '_blank'
+                        label: 'Sample code', icon: 'pi pi-fw pi-search', url: 'https://github.com/primefaces/sakai-ng', target: '_blank'
                     }
                 ]
             }

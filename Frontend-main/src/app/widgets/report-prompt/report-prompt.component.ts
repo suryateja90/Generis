@@ -2,6 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, computed, effect, ElementRef, input, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
+import { PrimeIcons } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
@@ -26,7 +27,7 @@ import { ReportingReportModel } from 'src/shared/models/reporting-report.model';
   standalone: true,
   imports: [ProgressSpinnerModule, ReactiveFormsModule, FloatLabelModule, InputTextModule, InputTextareaModule, ToolbarModule, ButtonModule, RippleModule, TooltipModule, NgClass,],
 })
-@RegisterWidget('app-report-prompt')
+@RegisterWidget('app-report-prompt', PrimeIcons.SERVER)
 export class ReportPromptComponent {
   parameters$ = input.required<any>({ alias: 'parameters' });
 

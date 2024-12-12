@@ -1,4 +1,5 @@
 import { Component, DestroyRef, inject, input, OnInit, viewChild } from '@angular/core';
+import { PrimeIcons } from 'primeng/api';
 
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
 import { DataTableComponent } from 'src/app/shared/ui/data-table/data-table/data-table.component';
@@ -23,7 +24,7 @@ import { ReportingDataService } from 'src/app/shared/ui/data-table/services/repo
     DataTransformerService, ReportingDataService
   ],
 })
-@RegisterWidget('app-report-data')
+@RegisterWidget('app-report-data', PrimeIcons.TABLE)
 export class ReportDataComponent implements OnInit {
 
   public parameters$ = input.required<any>({ alias: 'parameters' });

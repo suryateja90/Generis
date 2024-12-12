@@ -88,11 +88,15 @@ export class DataTransformerService extends AbstractParametersService {
     super();
 
     effect(() => {
-      this.dataRef.pageSize = this.pageSize$();
+      if (this.dataRef) {
+        this.dataRef.pageSize = this.pageSize$();
+      }
     });
 
     effect(() => {
-      this.dataRef.dataKey = this.dataKey$();
+      if (this.dataRef) {
+        this.dataRef.dataKey = this.dataKey$();
+      }
     });
 
     effect(() => {
@@ -106,17 +110,21 @@ export class DataTransformerService extends AbstractParametersService {
     }, { allowSignalWrites: true });
 
     effect(() => {
-      this.dataRef.columns = this.filteredCols$();
+      if (this.dataRef) {
+        this.dataRef.columns = this.filteredCols$();
+      }
     });
 
     effect(() => {
-      const tableWidth = this.tableWidth$();
-      const filteredCols = this.filteredCols$();
-      if (tableWidth > 0 && filteredCols?.length && this.dataTableRef.tableRef$()) {
-        this.dataTableRef.tableRef$().destroyStyleElement();
-        this.dataTableRef.tableRef$().tableWidthState = `${tableWidth}`;
-        this.dataTableRef.tableRef$().columnWidthsState = filteredCols.map(col => col.state.width).join(',');
-        this.dataTableRef.tableRef$().restoreColumnWidths();
+      if (this.dataTableRef) {
+        const tableWidth = this.tableWidth$();
+        const filteredCols = this.filteredCols$();
+        if (tableWidth > 0 && filteredCols?.length && this.dataTableRef.tableRef$()) {
+          this.dataTableRef.tableRef$().destroyStyleElement();
+          this.dataTableRef.tableRef$().tableWidthState = `${tableWidth}`;
+          this.dataTableRef.tableRef$().columnWidthsState = filteredCols.map(col => col.state.width).join(',');
+          this.dataTableRef.tableRef$().restoreColumnWidths();
+        }
       }
     });
   }

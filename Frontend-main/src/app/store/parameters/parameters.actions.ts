@@ -73,5 +73,5 @@ export const setDragState = createAction(
 // --------------------------------------------------------------------------------------------------
 export const performDynamicLayoutAction = createAction(
   '[Parameters] Perform Dynamic Layout Action',
-  props<{ action: DynamicLayoutAction }>()
+  props<{ action: DynamicLayoutAction, detail?: unknown }>()
 );

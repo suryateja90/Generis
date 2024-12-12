@@ -1,8 +1,8 @@
 // src/app/dynamic-layout/dynamic-layout
-import { Type } from "@angular/core";
+import { ComponentDetail } from "./register-widget.decorator";
 
 // here we store all component constructors by name
-export const ComponentRegistry: Record<string, Type<unknown>> = {};
+export const ComponentRegistry: Record<string, ComponentDetail> = {};
 
 // base interface definition for widget layout and its parameters
 export interface DynamicLayoutItem {

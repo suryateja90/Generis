@@ -74,6 +74,6 @@ export const parametersReducer = createReducer(
   on(ParametersActions.setDragState, (state, { isDraggable }) => ({ ...state, isDraggable })),
 
   // Perform `dynamicLayoutAction` each time the action is dispatched
-  on(ParametersActions.performDynamicLayoutAction, (state, { action }) => ({ ...state, dynamicLayoutAction: { action }, })),
+  on(ParametersActions.performDynamicLayoutAction, (state, { action, detail }) => ({ ...state, dynamicLayoutAction: { action, detail }, })),
 
 );

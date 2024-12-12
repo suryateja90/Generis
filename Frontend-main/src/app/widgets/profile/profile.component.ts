@@ -1,8 +1,9 @@
 import { Component, input } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { PrimeIcons } from 'primeng/api';
 
-import { selectProfile, selectProfileLoading } from '../../store/profile/profile.selectors';
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
+import { selectProfile, selectProfileLoading } from '../../store/profile/profile.selectors';
 
 @Component({
   selector: 'app-profile',
@@ -10,7 +11,7 @@ import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.de
   imports: [],
   templateUrl: './profile.component.html'
 })
-@RegisterWidget('app-profile')
+@RegisterWidget('app-profile', PrimeIcons.USER)
 export class ProfileComponent {
 
   parameters$ = input.required<any>({ alias: 'parameters' });

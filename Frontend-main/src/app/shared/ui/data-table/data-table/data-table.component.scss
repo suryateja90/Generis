@@ -45,6 +45,10 @@
         }
 
         .group-row {
+            .cell-value {
+                padding-left: 0.75rem;
+            }
+
             &:not(.p-highlight):not(:hover) {
                 background-color: var(--surface-50) !important;
             }

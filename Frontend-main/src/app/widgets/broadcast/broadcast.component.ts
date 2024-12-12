@@ -1,9 +1,11 @@
 import { DatePipe, JsonPipe } from '@angular/common';
 import { Component, computed, effect, input, signal, WritableSignal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { WebsocketMessageModel, WebsocketMessageType } from 'src/shared/models/websocket-message.model';
-import { selectSocketConnected, selectSocketMessageByType } from '../../store/websocket/websocket.selectors';
+import { PrimeIcons } from 'primeng/api';
+
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
+import { WebsocketMessageModel } from 'src/shared/models/websocket-message.model';
+import { selectSocketConnected, selectSocketMessageByType } from '../../store/websocket/websocket.selectors';
 
 @Component({
   selector: 'app-broadcast',
@@ -11,7 +13,7 @@ import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.de
   imports: [JsonPipe, DatePipe,],
   templateUrl: './broadcast.component.html',
 })
-@RegisterWidget('app-broadcast')
+@RegisterWidget('app-broadcast', PrimeIcons.MEGAPHONE)
 export class BroadcastComponent {
 
   parameters$ = input.required<any>({ alias: 'parameters' });

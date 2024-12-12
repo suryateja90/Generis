@@ -1,10 +1,12 @@
-import { Component, computed, effect, input, Pipe, PipeTransform, signal, Signal, viewChild, WritableSignal } from '@angular/core';
-import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
-import { Table, TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { TooltipModule } from 'primeng/tooltip';
-import { ExtractSignalPipe } from 'src/app/utils/extract-signal-pipe';
 import { CommonModule, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
+import { Component, computed, input, signal, Signal, viewChild, WritableSignal } from '@angular/core';
+import { PrimeIcons } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { Table, TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+
+import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
+import { ExtractSignalPipe } from 'src/app/utils/extract-signal-pipe';
 
 // stock watchlist using Angular 18 Signals: Simple, Computed and Wrtitable
 
@@ -28,27 +30,27 @@ class Stock {
 @Component({
   selector: 'app-opportunities',
   standalone: true,
-  imports: [TableModule, ButtonModule, TooltipModule, ExtractSignalPipe, CommonModule, ],
+  imports: [TableModule, ButtonModule, TooltipModule, ExtractSignalPipe, CommonModule,],
   providers: [PercentPipe, DecimalPipe, DatePipe],
   templateUrl: './opportunities.component.html',
   styleUrl: './opportunities.component.scss'
 })
-@RegisterWidget('app-opportunities')
+@RegisterWidget('app-opportunities', PrimeIcons.SHOPPING_BAG)
 export class OpportunitiesComponent {
 
   parameters$ = input.required<any>({ alias: 'parameters' });
   Title$ = computed(() => this.parameters$()?.Title);
 
   loading$ = signal<boolean>(false);
-  
-  cols = [ 
+
+  cols = [
     { field: "symbol", header: "Symbol" },
     { field: "volume", header: "Volume" },
     { field: "price", header: "Price" },
     { field: "open", header: "Open" },
     { field: "change", header: "%" }
-  ] as const ;  
-  
+  ] as const;
+
   // Using a Map for quick lookup, insertion, and deletion
   private stockSymbols: WritableSignal<Record<string, Stock>> = signal({});
 
@@ -63,15 +65,15 @@ export class OpportunitiesComponent {
     this.addStock();
     this.addStock();
     this.addStock();
-    
+
     // Start automatic price updates
     setInterval(() => this.updateRandomRecord(), 618);
   }
-  
+
   // ---------------------------------------------------------------------------------------------------------
   // Add a new stock dynamically
   addStock() {
-    
+
     // create a random name of four letters
     const newSymbol = Array.from({ length: 3 }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26))).join('');
     const random = Math.random();
@@ -98,7 +100,7 @@ export class OpportunitiesComponent {
   // ---------------------------------------------------------------------------------------------------------  
   updateRandomRecord() {
 
-    const stocks = this.stockSymbols();    
+    const stocks = this.stockSymbols();
     const keys = Object.keys(stocks);
     if (keys.length) {
       const stockKeys = Array.from(keys); // Get an array of keys
@@ -131,13 +133,13 @@ export class OpportunitiesComponent {
   }
 
   // ---------------------------------------------------------------------------------------------------------
-  clearStocks(){   
+  clearStocks() {
     this.stockSymbols.set({});
   }
-  
+
   // ---------------------------------------------------------------------------------------------------------
-  customSort(event: any) {    
-  }  
+  customSort(event: any) {
+  }
 
   // ---------------------------------------------------------------------------------------------------------
   private sortTableData(event) {
@@ -164,8 +166,8 @@ export class OpportunitiesComponent {
   }
 
   // ---------------------------------------------------------------------------------------------------------
-  onPageChange(event: any) {    
+  onPageChange(event: any) {
   }
-  
+
 
 }

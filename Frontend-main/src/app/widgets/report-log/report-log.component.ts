@@ -1,8 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { selectReportingMessages } from '../../store/reporting/reporting.selectors';
+import { PrimeIcons } from 'primeng/api';
+
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
+import { selectReportingMessages } from '../../store/reporting/reporting.selectors';
 
 @Component({
   selector: 'app-report-log',
@@ -11,9 +13,9 @@ import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.de
   standalone: true,
   imports: [DatePipe],
 })
-@RegisterWidget('app-report-log')
+@RegisterWidget('app-report-log', PrimeIcons.DATABASE)
 export class ReportConsoleComponent {
-  
+
   parameters$ = input.required<any>({ alias: 'parameters' });
 
   // aware the realm of rxjs uses the "$" as appendix to the observables, not a bad idea using them also for signals to know they are actually a reactive asset
