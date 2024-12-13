@@ -1,10 +1,13 @@
-import { Component, computed, effect, input, Pipe, PipeTransform, signal, Signal, viewChild, WritableSignal } from '@angular/core';
-import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
-import { Table, TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { TooltipModule } from 'primeng/tooltip';
-import { ExtractSignalPipe } from 'src/app/utils/extract-signal-pipe';
 import { CommonModule, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
+import { Component, computed, DestroyRef, inject, input, OnInit, signal, Signal, viewChild, WritableSignal } from '@angular/core';
+import { PrimeIcons } from 'primeng/api';
+import { ButtonModule } from 'primeng/button';
+import { Table, TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+
+import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
+import { ReportingDataService } from 'src/app/shared/ui/data-table/services/reporting-data.service';
+import { ExtractSignalPipe } from 'src/app/utils/extract-signal-pipe';
 
 // stock watchlist using Angular 18 Signals: Simple, Computed and Wrtitable
 
@@ -28,16 +31,23 @@ class Stock {
 @Component({
   selector: 'app-opportunities',
   standalone: true,
-  imports: [TableModule, ButtonModule, TooltipModule, ExtractSignalPipe, CommonModule, ],
-  providers: [PercentPipe, DecimalPipe, DatePipe],
+  imports: [TableModule, ButtonModule, TooltipModule, ExtractSignalPipe, CommonModule,],
+  providers: [PercentPipe, DecimalPipe, DatePipe, ReportingDataService],
   templateUrl: './opportunities.component.html',
   styleUrl: './opportunities.component.scss'
 })
-@RegisterWidget('app-opportunities')
-export class OpportunitiesComponent {
+@RegisterWidget('app-opportunities', PrimeIcons.SHOPPING_BAG)
+export class OpportunitiesComponent implements OnInit{
 
   parameters$ = input.required<any>({ alias: 'parameters' });
-  Title$ = computed(() => this.parameters$()?.Title);
+  Title$ = computed<string>(() => this.parameters$ ? this.parameters$()?.reportTitle : undefined);
+
+  public defaultParameters: any = {
+    reportTitle: 'Oppurtunity',
+    dataKey: 'numero_instrumento',
+    fixedReportKey: 1020,
+    websocketMessageType: 'Oppurtunity',
+  };
 
   loading$ = signal<boolean>(false);
   
@@ -58,32 +68,72 @@ export class OpportunitiesComponent {
   private tableRef$ = viewChild('tableRef', { read: Table });
 
   // ---------------------------------------------------------------------------------------------------------
-  constructor() {
+  constructor(private reportingService: ReportingDataService) {
 
-    this.addStock();
-    this.addStock();
-    this.addStock();
-    
+    // this.addStock();
+    // this.addStock();
+    // this.addStock();
+
     // Start automatic price updates
-    setInterval(() => this.updateRandomRecord(), 618);
+    // setInterval(() => this.updateRandomRecord(), 618);
   }
-  
+ private destroyRef = inject(DestroyRef);
+
+ ngOnInit(): void {
+  this.reportingService.config({
+    parameters: this.parameters$(), // Pass required parameters for the API
+    destroyRef: this.destroyRef,
+    data: (items: any[]) => {
+      if (items && items.length > 0) {
+        console.log('Data received from API:', items);
+
+        // Process the received data and update stockSymbols
+        this.stockSymbols.update((currentStocks: Record<string, Stock>) => {
+          const updatedStocks = { ...currentStocks }; // Create a shallow copy
+          items.forEach(item => {
+            // Replace 'symbol', 'volume', and 'price' with actual API response field names
+            const symbol = item.bolsa_origen;
+            const volume = item.numero_instrumento
+            ;
+            const price = item.ultimo_precio;
+            updatedStocks[symbol] = new Stock(symbol, volume, price);
+          });
+          return updatedStocks;
+        });
+
+        console.log('Updated stock symbols:', this.stockSymbols);
+      } else {
+        console.warn('No items received from API.');
+      }
+    },
+    dataLoadingStatus: (loading: boolean) => {
+      console.log(loading ? 'Loading data...' : 'Data loading complete.');
+    },
+    error: (error: string) => {
+      console.error('Error fetching reporting data:', error);
+    },
+  });
+
+  // Signal that data loading is complete
+  this.reportingService.dataLoadCompleted();
+}
+
   // ---------------------------------------------------------------------------------------------------------
   // Add a new stock dynamically
-  addStock() {
-    
-    // create a random name of four letters
-    const newSymbol = Array.from({ length: 3 }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26))).join('');
-    const random = Math.random();
-    const newPrice = (Math.floor(random * 900000) + 100) / 100;
-    const newVolume = Math.floor(random * 10000) + 1;
+  // addStock() {
 
-    this.stockSymbols.update((stocks: Record<string, Stock>) => {
-      const newStocks = { ...stocks }; // Create a shallow copy of the original Recor
-      newStocks[newSymbol] = new Stock(newSymbol, newVolume, newPrice);
-      return newStocks;
-    });
-  }
+  //   // create a random name of four letters
+  //   const newSymbol = Array.from({ length: 3 }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26))).join('');
+  //   const random = Math.random();
+  //   const newPrice = (Math.floor(random * 900000) + 100) / 100;
+  //   const newVolume = Math.floor(random * 10000) + 1;
+
+  //   this.stockSymbols.update((stocks: Record<string, Stock>) => {
+  //     const newStocks = { ...stocks }; // Create a shallow copy of the original Recor
+  //     newStocks[newSymbol] = new Stock(newSymbol, newVolume, newPrice);
+  //     return newStocks;
+  //   });
+  // }
 
   // ---------------------------------------------------------------------------------------------------------
   // Remove a stock by its symbol

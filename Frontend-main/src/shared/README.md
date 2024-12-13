@@ -5,7 +5,7 @@ Generis Electronic Markets
 ---
 
 ## Table of Contents
-1. [Objective](#Objective)
+1. [Platform Overview](#Platform-Overview)
 2. [Technology Stack](#technology-stack)
 3. [Versions Used](#versions-used)
 4. [Modules Structure](#module-structure)
@@ -14,18 +14,23 @@ Generis Electronic Markets
 
 ---
 
-## Objective
-The Generis Electronic Markets (GEM) DeskTrade application promises to offer traders, investors, and institutions a comprehensive platform for trading financial assets on a global scale. It utilizes an easy-to-use PrimeNG interface to provide extensive trading capabilities, real-time monitoring, and customized dashboards. The platform ensures accessibility by providing browser-based access for easy trading and portfolio management.
+## Platform Overview
+A comprehensive trading platform, Generis Electronic Markets (GEM) DeskTrade allows traders, investors, and institutions to trade a variety of financial assets on international markets, such as stocks, currencies, and cryptocurrencies. GEM TradeDesk provides configurable dashboards, real-time monitoring, and sophisticated trading capabilities.
+
+ as functional units, and dozens of widgets. It is run on the user-friendly PrimeNG interface, which offers instant access to tools for trading, order management, and portfolio management. It guarantees users' flexibility and accessibility by supporting browser-based access.
+
+ The developer can create individual dashboards tailored to specific functionality needs, each populated with a variety of widgets that offer distinct functionalities such as real-time market data, database data management, and advanced charting tools.
+ The end users relies on a modular design that allows to drag and drop widgets, resize them, and configure their settings to suit their trading strategies. This flexibility ensures workspace optimization for efficiency and effectiveness
+
 
 ---
 
 
 
 ## Technology Stack
-UI features using PrimeNG, FullCalendar, and Chart.js.
-State management handled by NgRx.
-Signals are Used for state management and reactivity.
-Advanced Testing setup with Jasmine, Karma, and Puppetee
+The application uses PrimeNG for UI features, FullCalendar for event management, and Chart.js for data visualization.
+State management is primarily handled by NgRx, but in addition to this, Angular Signals are leveraged for more efficient and intuitive component interaction. Signals provide a simpler and more maintainable approach to managing state and data flow, reducing the cognitive load typically associated with RxJS’s complex reactive paradigms. This native Angular feature ensures seamless compatibility, enhances performance, and reduces bundle size, offering a lightweight footprint while improving overall maintainability.
+Advanced testing is set up with Jasmine, Karma, and Puppeteer, ensuring high-quality code and functionality.
 
 ---
 
@@ -80,6 +85,8 @@ Sidebar Navigation:  All menu items are housed within the sidebar, providing eas
 
 Dashboard serves as a centralized interface in the Angular app, providing users with an overview of key metrics, actionable insights, and quick access to essential features through interactive widgets and customizable components.
 
+Widgets: The application utilizes widgets as modular, reusable components within the layout. These widgets provide interactive and dynamic functionalities, offering users real-time data insights and seamless user experiences. The integration of web socket functionality within these widgets enables instant message and notification updates, ensuring that the user interface reflects the most current data without requiring page refreshes. This dynamic, component-based structure ensures that the application is not only responsive but also highly maintainable, with each widget handling its own specific functionality and state.
+
 Lazy Loading: Enabled for auth, uikit, utilities, and all other feature modules.
 
 Dynamic Redirect: Utilizes sessionStorage for remembering the last route.
@@ -87,7 +94,6 @@ Dynamic Redirect: Utilizes sessionStorage for remembering the last route.
 Fallback: Handles invalid routes with a wildcard redirect to a custom NotfoundComponent.
 
 Component-based Loading: Most routes load individual components dynamically using loadComponent.
-
 
 ConfigService is the service that provides api urls again which are configured in environment file and provides websocket urls 
 
