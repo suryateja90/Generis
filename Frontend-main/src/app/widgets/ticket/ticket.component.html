@@ -1,0 +1,102 @@
+@if(!action$()) {
+<p-dialog appendTo="body" [header]="(title$() ? title$() + ' - ' : '') + ticketForm.action" [modal]="true"
+    [(visible)]="dialogVisible" [style]="{ minWidth: '25rem' }">
+    <ng-container *ngTemplateOutlet="formTemplate"></ng-container>
+</p-dialog>
+}@else {
+<div class="flex flex-column gap-3 p-3">
+    <div class="font-bold text-xl">{{(title$() ? title$() + ' - ' : '') + ticketForm.action}}</div>
+    <div><ng-container *ngTemplateOutlet="formTemplate"></ng-container></div>
+</div>
+}
+
+<ng-template #formTemplate>
+    <span class="p-text-secondary block mb-4">Please fill the form data.</span>
+    @if(ticketForm.form){
+    <form [formGroup]="ticketForm.form">
+        <div class="flex flex-column">
+            <div class="grid max-w-30rem">
+                @for (field of ticketForm.fields; track field.name; let i = $index) {
+                @if(field.visible && ticketForm.form.contains(field.name)){
+                <div [class]="'col-' + 12 / ticketForm.maxColspan * field.colspan">
+                    @switch (field.type) {
+                    @case ('text') {
+                    <p-floatLabel class="mt-4 mb-1">
+                        <input [id]="i + '.' + field.name" [formControlName]="field.name" [placeholder]="field.label"
+                            pInputText class="w-full" [required]="field.required">
+                        <label [for]="i  + '.' + field.name" class="font-medium"
+                            [ngClass]="{'label-required': field.required}">{{field.label}}</label>
+                    </p-floatLabel>
+                    }
+                    @case ('integer') {
+                    <p-floatLabel class="mt-4 mb-1">
+                        <p-inputNumber [inputId]="i + '.' + field.name" [formControlName]="field.name"
+                            [placeholder]="field.label" class="w-full" styleClass="w-full" inputStyleClass="w-full"
+                            [required]="field.required" />
+                        <label [for]="i  + '.' + field.name" class="font-medium"
+                            [ngClass]="{'label-required': field.required}">{{field.label}}</label>
+                    </p-floatLabel>
+                    }
+                    @case ('double') {
+                    <p-floatLabel class="mt-4 mb-1">
+                        <p-inputNumber mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2"
+                            [inputId]="i + '.' + field.name" [formControlName]="field.name" [placeholder]="field.label"
+                            class="w-full" styleClass="w-full" inputStyleClass="w-full" [required]="field.required" />
+                        <label [for]="i  + '.' + field.name" class="font-medium"
+                            [ngClass]="{'label-required': field.required}">{{field.label}}</label>
+                    </p-floatLabel>
+                    }
+                    @case ('date') {
+                    <p-floatLabel class="mt-4 mb-1">
+                        <p-calendar [id]="i + '.' + field.name" [formControlName]="field.name" styleClass="w-full"
+                            appendTo="body" [required]="field.required" />
+                        <label [for]="i  + '.' + field.name" class="font-medium"
+                            [ngClass]="{'label-required': field.required}">{{field.label}}</label>
+                    </p-floatLabel>
+                    }
+                    @case ('time') {
+                    <p-floatLabel class="mt-4 mb-1">
+                        <p-calendar [id]="i + '.' + field.name" [formControlName]="field.name" styleClass="w-full"
+                            appendTo="body" [required]="field.required" [timeOnly]="true" [showSeconds]="true" />
+                        <label [for]="i  + '.' + field.name" class="font-medium"
+                            [ngClass]="{'label-required': field.required}">{{field.label}}</label>
+                    </p-floatLabel>
+                    }
+                    @case ('datetime') {
+                    <p-floatLabel class="mt-4 mb-1">
+                        <p-calendar [id]="i + '.' + field.name" [formControlName]="field.name" styleClass="w-full"
+                            appendTo="body" [required]="field.required" [showTime]="true" [showSeconds]="true" />
+                        <label [for]="i  + '.' + field.name" class="font-medium"
+                            [ngClass]="{'label-required': field.required}">{{field.label}}</label>
+                    </p-floatLabel>
+                    }
+                    @case ('select') {
+                    <p-floatLabel class="mt-4 mb-1">
+                        <p-dropdown [id]="i + '.' + field.name" [formControlName]="field.name" styleClass="w-full"
+                            [options]="field.options" [placeholder]="field.label" appendTo="body"
+                            [required]="field.required" />
+                        <label [for]="i  + '.' + field.name" class="font-medium"
+                            [ngClass]="{'label-required': field.required}">{{field.label}}</label>
+                    </p-floatLabel>
+                    }
+                    @default {
+                    <p-floatLabel class="mt-4 mb-1">
+                        <input [id]="i + '.' + field.name" [formControlName]="field.name" [placeholder]="field.label"
+                            pInputText class="w-full ng-invalid ng-dirty" [required]="field.required" [readonly]="true">
+                        <label [for]="i  + '.' + field.name" class="font-medium"
+                            [ngClass]="{'label-required': field.required}">{{field.label}} [invalid input]</label>
+                    </p-floatLabel>
+                    }
+                    }
+                </div>
+                }
+                }
+            </div>
+            <div class="flex justify-content-end gap-2 mt-5">
+                <button type="button" pButton pRipple [label]="ticketForm.action" [disabled]="ticketForm.form.invalid"
+                    (click)="onAction()"></button>
+            </div>
+        </div>
+    </form>
+    }
+</ng-template>

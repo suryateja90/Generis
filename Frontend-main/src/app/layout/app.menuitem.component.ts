@@ -1,12 +1,14 @@
-import { ChangeDetectorRef, Component, Host, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterLinkActive, RouterLink } from '@angular/router';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { NgClass } from '@angular/common';
+import { ChangeDetectorRef, Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+import { Ripple } from 'primeng/ripple';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+
 import { MenuService } from './app.menu.service';
 import { LayoutService } from './service/app.layout.service';
-import { NgClass } from '@angular/common';
-import { Ripple } from 'primeng/ripple';
 
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
@@ -18,7 +20,7 @@ import { Ripple } from 'primeng/ripple';
 		  }
 		  @if ((!item.routerLink || item.items) && item.visible !== false) {
 		    <a [attr.href]="item.url" (click)="itemClick($event)"
-		      [ngClass]="item.class" [attr.target]="item.target" tabindex="0" pRipple>
+		      [ngClass]="item.styleClass" [attr.target]="item.target" tabindex="0" pRipple>
 		      <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
 		      <span class="layout-menuitem-text">{{item.label}}</span>
 		      @if (item.items) {
@@ -27,7 +29,7 @@ import { Ripple } from 'primeng/ripple';
 		    </a>
 		  }
 		  @if ((item.routerLink && !item.items) && item.visible !== false) {
-		    <a (click)="itemClick($event)" [ngClass]="item.class"
+		    <a (click)="itemClick($event)" [ngClass]="item.styleClass"
 		      [routerLink]="item.routerLink" routerLinkActive="active-route" [routerLinkActiveOptions]="item.routerLinkActiveOptions||{ paths: 'exact', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' }"
 		      [fragment]="item.fragment" [queryParamsHandling]="item.queryParamsHandling" [preserveFragment]="item.preserveFragment"
 		      [skipLocationChange]="item.skipLocationChange" [replaceUrl]="item.replaceUrl" [state]="item.state" [queryParams]="item.queryParams"
@@ -43,7 +45,7 @@ import { Ripple } from 'primeng/ripple';
 		  @if (item.items && item.visible !== false) {
 		    <ul [@children]="submenuAnimation">
 		      @for (child of item.items; track child; let i = $index) {
-		        <li app-menuitem [item]="child" [index]="i" [parentKey]="key" [class]="child.badgeClass"></li>
+		        <li app-menuitem [item]="child" [index]="i" [parentKey]="key" [class]="child.styleClass"></li>
 		      }
 		    </ul>
 		  }
@@ -65,7 +67,7 @@ import { Ripple } from 'primeng/ripple';
 })
 export class AppMenuitemComponent implements OnInit, OnDestroy {
 
-    @Input() item: any;
+    @Input() item: MenuItem;
 
     @Input() index!: number;
 
@@ -147,7 +149,7 @@ export class AppMenuitemComponent implements OnInit, OnDestroy {
         return this.root ? 'expanded' : (this.active ? 'expanded' : 'collapsed');
     }
 
-    @HostBinding('class.active-menuitem') 
+    @HostBinding('class.active-menuitem')
     get activeClass() {
         return this.active && !this.root;
     }

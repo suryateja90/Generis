@@ -49,8 +49,14 @@ export const selectUpdateParametersLoading = createSelector(
 export const selectDragFeature = createFeatureSelector<ParametersState>('parameters');
 export const selectIsDraggable = createSelector(selectDragFeature, (state) => state.isDraggable);
 
-/// Selector to get the `dynamicLayoutAction` value
+// Selector to get the `dynamicLayoutAction` value
 export const selectDynamicLayoutAction = createSelector(
   selectParametersState,
   (state: ParametersState) => state.dynamicLayoutAction?.action
+);
+
+// Selector to get the `dynamicLayoutAction.detail` value
+export const selectDynamicLayoutActionDetail = createSelector(
+  selectParametersState,
+  (state: ParametersState) => state.dynamicLayoutAction?.detail
 );

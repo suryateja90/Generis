@@ -63,7 +63,7 @@
                             </div>
                             }
                             <div
-                                class="white-space-nowrap text-overflow-ellipsis {{rowData[col.formattedField].styleClass}}">
+                                class="cell-value white-space-nowrap text-overflow-ellipsis {{rowData[col.formattedField].styleClass}}">
                                 {{rowData[col.formattedField].formattedValue}}
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                             <div class="w-2rem mr-2">&nbsp;</div>
                             }
                             <div
-                                class="white-space-nowrap text-overflow-ellipsis {{rowData[col.formattedField].styleClass}}">
+                                class="cell-value white-space-nowrap text-overflow-ellipsis {{rowData[col.formattedField].styleClass}}">
                                 {{rowData[col.formattedField].formattedValue}}
                             </div>
                         </div>
@@ -101,7 +101,7 @@
                     @for (col of columns; track $index){
                     <td [ngClass]="{'highlight-cell': rowData[col.formattedField].highlight}">
                         <div
-                            class="white-space-nowrap text-overflow-ellipsis {{rowData[col.formattedField].styleClass}}">
+                            class="cell-value white-space-nowrap text-overflow-ellipsis {{rowData[col.formattedField].styleClass}}">
                             {{rowData[col.formattedField].formattedValue}}
                         </div>
                     </td>

@@ -35,6 +35,7 @@ import './app/widgets/parameters-view/parameters-view.component';
 import './app/widgets/profile/profile.component';
 import './app/widgets/test-dt/test-dt.component';
 import './app/widgets/test-widget/test-widget.component';
+import './app/widgets/ticket/ticket.component';
 import './app/widgets/watchlist/watchlist.component';
 
 // Reporting is a special case at this moment

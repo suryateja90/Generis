@@ -5,8 +5,9 @@
             <ng-template #additionalActionsTemplate>
                 <button type="button" pButton pRipple icon="pi font-bold pi-plus" [rounded]="true" [text]="true"
                     [plain]="true" [outlined]="true" size="small" pTooltip="Add" tooltipPosition="left"
-                    (click)="showDialog('Add')"></button>
+                    (click)="ticketRef.showDialog('Add', undefined)"></button>
             </ng-template>
         </app-dt-caption>
     </ng-template>
 </app-data-table>
+<app-ticket #ticketRef [title]="title$()" [parameters]="blotterTicketParameters"></app-ticket>

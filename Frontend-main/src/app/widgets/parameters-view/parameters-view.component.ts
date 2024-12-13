@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 
+import { PrimeIcons } from 'primeng/api';
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
 import { setParameter } from 'src/app/store/parameters/parameters.actions';
 import { SeguridadParameterModel } from 'src/shared/models/seguridad-parameter.model';
@@ -21,7 +22,7 @@ import { selectParameters } from '../../store/parameters/parameters.selectors';
     }
   `],
 })
-@RegisterWidget('app-parameters-view')
+@RegisterWidget('app-parameters-view', PrimeIcons.LIST)
 export class ParametersViewComponent {
 
   parameters$ = input.required<any>({ alias: 'parameters' });

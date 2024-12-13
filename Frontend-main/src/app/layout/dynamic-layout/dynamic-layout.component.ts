@@ -1,5 +1,5 @@
 
-import { Component, computed, effect, input, signal, Type, viewChild, viewChildren, ViewContainerRef } from '@angular/core';
+import { Component, computed, effect, input, signal, viewChild, viewChildren, ViewContainerRef } from '@angular/core';
 import { ktdGridCompact, KtdGridCompactType, KtdGridComponent, KtdGridItemComponent, KtdGridLayout, KtdGridLayoutItem } from '@katoid/angular-grid-layout';
 import { Store } from '@ngrx/store';
 import { ButtonModule } from 'primeng/button';
@@ -12,7 +12,7 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { performDynamicLayoutAction, setParameter } from 'src/app/store/parameters/parameters.actions';
-import { selectApplicationParameters, selectDynamicLayoutAction, selectIsDraggable, selectParametersLoading } from 'src/app/store/parameters/parameters.selectors';
+import { selectApplicationParameters, selectDynamicLayoutAction, selectDynamicLayoutActionDetail, selectIsDraggable, selectParametersLoading } from 'src/app/store/parameters/parameters.selectors';
 import { SeguridadParameterModel } from 'src/shared/models/seguridad-parameter.model';
 import { ComponentRegistry, DynamicLayoutItem } from './dynamic-layout.model';
 import { ReportingDataService } from 'src/app/shared/ui/data-table/services/reporting-data.service';
@@ -68,11 +68,13 @@ export class DynamicLayoutComponent {
 
   widgets$ = computed<string[]>(() => Object.keys(ComponentRegistry));
   dynamicLayoutAction$ = this.store.selectSignal(selectDynamicLayoutAction);
-  addWidgetDialogVisible = false;
+  dynamicLayoutActionDetail$ = this.store.selectSignal(selectDynamicLayoutActionDetail);
 
-  addWidgetForm = this.fb.group({
-    widget: [undefined, Validators.required],
-  });
+  addWidgetDialog = {
+    visible: false,
+    widget: undefined,
+    form: this.fb.group({ widget: ['', Validators.required], }),
+  };
 
   private resizeObserver: ResizeObserver;
 
@@ -95,13 +97,15 @@ export class DynamicLayoutComponent {
 
           case 'add-widget':
             // show dialog box to select and add widget to the layout
-            this.addWidgetForm.reset();
-            this.addWidgetDialogVisible = true;
+            this.addWidgetDialog.form.reset();
+            this.addWidgetDialog.widget = this.dynamicLayoutActionDetail$();
+            if (this.addWidgetDialog.widget) { this.addWidgetDialog.form.patchValue({ widget: this.addWidgetDialog.widget }); }
+            this.addWidgetDialog.visible = true;
             break;
         }
         // when subscribe to signals that selects from the NgRx store, the component picks up the last stored value on initialization, triggering actions on startup
         // so lets reset the dynamicLayoutAction state to null automatically after handling an action so the action gets consumed once and isn’t retained for the next component initialization
-        this.store.dispatch(performDynamicLayoutAction({ action: null }));
+        this.store.dispatch(performDynamicLayoutAction({ action: null, detail: null }));
       }
     }, { allowSignalWrites: true });
 
@@ -132,7 +136,7 @@ export class DynamicLayoutComponent {
 
           // Set the parameters input (all widgets must have required parameters input)
           if (componentType) {
-            const componentRef = container.createComponent(componentType as Type<unknown>);
+            const componentRef = container.createComponent(componentType.type);
             const defaultParameters = (componentRef.instance as any).defaultParameters;
             const parameters = this.layoutDict[item.id]?.parameters ?? defaultParameters;
             componentRef.setInput('parameters', parameters);
@@ -184,15 +188,15 @@ export class DynamicLayoutComponent {
   }
 
   onAddItem() {
-    if (this.addWidgetForm.valid) {
-      const { widget } = this.addWidgetForm.value;
+    if (this.addWidgetDialog.form.valid) {
+      const { widget } = this.addWidgetDialog.form.value;
       const layout = this.layout$();
       // Parameters should be customized for each widget.
       const parameters = widget === 'app-test-widget' ? { title: 'My Title 1', subTitle: 'My Subtitle 1', count: 1 } : undefined; // TODO: Improve implementation and handle more widgets.
       const item: DynamicLayoutItem = { id: widget, x: -1, y: -1, w: 6, h: 3, parameters };
       const newLayout = ktdGridCompact([this.map(item, layout.length), ...layout], this.compactType, this.cols);
       this.onLayoutUpdated(newLayout);
-      this.addWidgetDialogVisible = false;
+      this.addWidgetDialog.visible = false;
     }
   }
 

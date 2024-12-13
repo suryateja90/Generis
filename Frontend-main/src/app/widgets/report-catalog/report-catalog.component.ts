@@ -1,6 +1,6 @@
 import { Component, computed, effect, input, Signal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { TreeNode } from 'primeng/api';
+import { PrimeIcons, TreeNode } from 'primeng/api';
 import { TreeModule } from 'primeng/tree';
 
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
@@ -16,7 +16,7 @@ import { ReportingReportModel } from 'src/shared/models/reporting-report.model';
   standalone: true,
   imports: [TreeModule,],
 })
-@RegisterWidget('app-report-catalog')
+@RegisterWidget('app-report-catalog', PrimeIcons.BARS)
 export class ReportCatalogComponent {
 
   parameters$ = input.required<any>({ alias: 'parameters' });

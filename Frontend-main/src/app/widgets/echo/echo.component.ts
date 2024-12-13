@@ -1,11 +1,12 @@
 import { DatePipe, JsonPipe } from '@angular/common';
-import { Component, computed, effect, input, OnInit, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, effect, input, signal, WritableSignal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { WebsocketMessageModel } from 'src/shared/models/websocket-message.model';
-import { selectSocketConnected, selectSocketMessageByType } from '../../store/websocket/websocket.selectors';
+import { PrimeIcons } from 'primeng/api';
 
-import { socketSendMessage } from '../../store/websocket/websocket.actions';
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
+import { WebsocketMessageModel } from 'src/shared/models/websocket-message.model';
+import { socketSendMessage } from '../../store/websocket/websocket.actions';
+import { selectSocketConnected, selectSocketMessageByType } from '../../store/websocket/websocket.selectors';
 
 @Component({
   selector: 'app-echo',
@@ -13,21 +14,21 @@ import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.de
   imports: [JsonPipe, DatePipe,],
   templateUrl: './echo.component.html',
 })
-@RegisterWidget('app-echo')
+@RegisterWidget('app-echo', PrimeIcons.COMMENT)
 export class EchoComponent {
 
-  parameters$ = input.required<any>({ alias: 'parameters' }); 
-  
+  parameters$ = input.required<any>({ alias: 'parameters' });
+
   echoTitle$ = computed(() => this.parameters$()?.echoTitle || 'N/A');
   echoArray$ = computed(() => this.parameters$()?.echoArray || []);
-  
+
   public connected$ = this.store.selectSignal(selectSocketConnected);
 
   // Storing All Messages: Components can store messages perpetually by updating local signals when a new message arrives.
   public echoMessage$ = this.store.selectSignal(selectSocketMessageByType("Echo"));
   public echoMessageSignals$: WritableSignal<Record<number, WritableSignal<WebsocketMessageModel>>> = signal<Record<number, WritableSignal<WebsocketMessageModel>>>({});
   public echoMessagesArray$ = computed(() => Object.values(this.echoMessageSignals$()));
-  
+
   // ------------------------------------------------------------------------------------------------------------------------
   constructor(private store: Store) {
 
@@ -43,9 +44,9 @@ export class EchoComponent {
         }));
       }
     }, { allowSignalWrites: true });
-    
+
   }
-  
+
   // ------------------------------------------------------------------------------------------------------------------------
   echo(): void {
     const message: WebsocketMessageModel = {

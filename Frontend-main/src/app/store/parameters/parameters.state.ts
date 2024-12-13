@@ -8,7 +8,7 @@ export interface ParametersState {
   error: string | null;
   loading: boolean;
   isDraggable: boolean;
-  dynamicLayoutAction: { action: DynamicLayoutAction };
+  dynamicLayoutAction: { action: DynamicLayoutAction, detail: unknown };
 };
 
 export const initialParametersState: ParametersState = {

@@ -1,5 +1,5 @@
 import { DatePipe, NgClass } from '@angular/common';
-import { Component, computed, DestroyRef, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, DestroyRef, effect, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -12,7 +12,7 @@ import { logout } from 'src/app/store/auth/auth.actions';
 import { performDynamicLayoutAction, setDragState } from 'src/app/store/parameters/parameters.actions';
 import { selectIsDraggable } from 'src/app/store/parameters/parameters.selectors';
 import { socketConnect, socketDisconnect } from 'src/app/store/websocket/websocket.actions';
-import { selectSocketConnected } from 'src/app/store/websocket/websocket.selectors';
+import { selectSocketConnected, selectSocketMessageByType } from 'src/app/store/websocket/websocket.selectors';
 import { ConfigService } from '../services/config.service';
 import { LayoutService } from "./service/app.layout.service";
 
@@ -42,6 +42,9 @@ export class AppTopBarComponent implements OnInit {
     public connected$ = this.store.selectSignal(selectSocketConnected);
     public isDraggable$ = this.store.selectSignal(selectIsDraggable);
 
+    private dateTime$ = signal(new Date());
+    private heartbeatMessage$ = this.store.selectSignal(selectSocketMessageByType("Heartbeat"));
+
     private readonly destroyRef: DestroyRef = inject(DestroyRef);
 
     constructor(public layoutService: LayoutService,
@@ -50,7 +53,16 @@ export class AppTopBarComponent implements OnInit {
         private router: Router,
         private confirmationService: ConfirmationService,
         private configService: ConfigService,
-    ) { }
+    ) {
+        // Monitor heartbeat messages using an Angular Signal effect
+        effect(() => {
+            // This effect runs whenever heartbeatMessage$ updates (i.e., a heartbeat is received)
+            const heartbeatMessage = this.heartbeatMessage$();
+            if (heartbeatMessage) {
+                this.dateTime$.set(new Date(heartbeatMessage.timestamp));
+            }
+        }, { allowSignalWrites: true })
+    }
 
     ngOnInit() {
         this.router.events
@@ -61,6 +73,10 @@ export class AppTopBarComponent implements OnInit {
             ).subscribe(() => {
                 // Reset draggable state when navigating to a new route.
                 this.store.dispatch(setDragState({ isDraggable: false }));
+
+                // the component picks up the last stored value on initialization, triggering actions on startup
+                // so lets reset the dynamicLayoutAction state to null automatically so the action gets consumed once and isn’t retained for the next component initialization
+                this.store.dispatch(performDynamicLayoutAction({ action: null, detail: null }));
 
                 // // Determine if the layout adjustment options should be visible for the current route.
                 // this.showAdjustLayoutOptions = checkRouterChildsData(
@@ -98,8 +114,8 @@ export class AppTopBarComponent implements OnInit {
     }
 
     // ------------------------------------------------------------------------
-    // display the tooltip with the current date and time
-    currentDateTime$ = computed(() => this.datePipe.transform(new Date(), 'EEE yyyy-MMM-dd HH:mm:ss'));
+    // display the tooltip with the date and time
+    public displayDateTime$ = computed(() => this.datePipe.transform(this.dateTime$(), 'EEE yyyy-MMM-dd HH:mm:ss'));
 
     // ------------------------------------------------------------------------
     onUserProfileButtonClick() {

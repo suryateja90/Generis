@@ -1,4 +1,5 @@
 import { Component, computed, DestroyRef, inject, input, OnInit, viewChild } from '@angular/core';
+import { PrimeIcons } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { TooltipModule } from 'primeng/tooltip';
@@ -11,6 +12,7 @@ import { DtCaptionComponent } from 'src/app/shared/ui/data-table/dt-caption/dt-c
 import { DataTransformerService } from 'src/app/shared/ui/data-table/services/data-transformer.service';
 import { ReportingDataService } from 'src/app/shared/ui/data-table/services/reporting-data.service';
 import { WebsocketMessageService } from 'src/app/shared/ui/data-table/services/websocket-message.service';
+import { TicketComponent } from '../ticket/ticket.component';
 
 @Component({
   selector: 'app-blotter',
@@ -23,12 +25,12 @@ import { WebsocketMessageService } from 'src/app/shared/ui/data-table/services/w
     }
   `],
   standalone: true,
-  imports: [DataTableComponent, DtCaptionComponent, ButtonModule, RippleModule, TooltipModule],
+  imports: [DataTableComponent, DtCaptionComponent, ButtonModule, RippleModule, TooltipModule, TicketComponent],
   providers: [
     DataTransformerService, ReportingDataService, WebsocketMessageService
   ],
 })
-@RegisterWidget('app-blotter')
+@RegisterWidget('app-blotter', PrimeIcons.SORT)
 export class BlotterComponent implements OnInit {
   public parameters$ = input.required<any>({ alias: 'parameters' });
 
@@ -42,6 +44,11 @@ export class BlotterComponent implements OnInit {
     groupingSortField: 'f11_clordid',
     fixedReportKey: 1010,
     websocketMessageType: 'Reply',
+  };
+
+  public blotterTicketParameters: any = {
+    name: 'blotter',
+    type: 'Request',
   };
 
   public title$ = computed<string>(() => this.parameters$ ? this.parameters$()?.reportTitle : undefined);
@@ -110,10 +117,5 @@ export class BlotterComponent implements OnInit {
       destroyRef: this.destroyRef,
       data: this.transformer.upsertData
     });
-  }
-
-  // --------------------------------------------------------------------------
-  showDialog(action: string) {
-    console.debug(action);
   }
 }

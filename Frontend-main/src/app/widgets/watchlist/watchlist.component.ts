@@ -1,4 +1,5 @@
 import { Component, computed, DestroyRef, inject, input, OnInit, viewChild } from '@angular/core';
+import { PrimeIcons } from 'primeng/api';
 
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
 import { DataTableComponent } from 'src/app/shared/ui/data-table/data-table/data-table.component';
@@ -24,7 +25,7 @@ import { WebsocketMessageService } from 'src/app/shared/ui/data-table/services/w
     DataTransformerService, ReportingDataService, WebsocketMessageService
   ],
 })
-@RegisterWidget('app-watchlist')
+@RegisterWidget('app-watchlist', PrimeIcons.STOPWATCH)
 export class WatchlistComponent implements OnInit {
   public parameters$ = input.required<any>({ alias: 'parameters' });
 
