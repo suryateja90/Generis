@@ -1,173 +1,82 @@
-import { CommonModule, DatePipe, DecimalPipe, PercentPipe } from '@angular/common';
-import { Component, computed, input, signal, Signal, viewChild, WritableSignal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, OnInit, viewChild } from '@angular/core';
 import { PrimeIcons } from 'primeng/api';
-import { ButtonModule } from 'primeng/button';
-import { Table, TableModule } from 'primeng/table';
-import { TooltipModule } from 'primeng/tooltip';
 
 import { RegisterWidget } from 'src/app/layout/dynamic-layout/register-widget.decorator';
-import { ExtractSignalPipe } from 'src/app/utils/extract-signal-pipe';
-
-// stock watchlist using Angular 18 Signals: Simple, Computed and Wrtitable
-
-class Stock {
-  symbol: string;
-  volume: number;
-  price: WritableSignal<number>;
-  open: number;
-  change: Signal<number>;
-
-  constructor(symbol: string, volume: number, price: number) {
-    this.symbol = symbol;
-    this.volume = volume;
-    this.price = signal(price);
-    this.open = price;
-    this.change = computed(() => Math.floor(1000 * this.price() / this.open - 1000) / 10);
-  }
-
-}
+import { DataTableComponent } from 'src/app/shared/ui/data-table/data-table/data-table.component';
+import { setData } from 'src/app/shared/ui/data-table/data-table/data-table.models';
+import { DtCaptionComponent } from 'src/app/shared/ui/data-table/dt-caption/dt-caption.component';
+import { DataTransformerService } from 'src/app/shared/ui/data-table/services/data-transformer.service';
+import { ReportingDataService } from 'src/app/shared/ui/data-table/services/reporting-data.service';
+import { WebsocketMessageService } from 'src/app/shared/ui/data-table/services/websocket-message.service';
 
 @Component({
   selector: 'app-opportunities',
-  standalone: true,
-  imports: [TableModule, ButtonModule, TooltipModule, ExtractSignalPipe, CommonModule,],
-  providers: [PercentPipe, DecimalPipe, DatePipe],
   templateUrl: './opportunities.component.html',
-  styleUrl: './opportunities.component.scss'
+  styles: [`
+    :host {
+      display: flex;
+      width: 100%;
+      height: 100%; // Ensure the host takes full available space.
+    }
+  `],
+  standalone: true,
+  imports: [DataTableComponent, DtCaptionComponent],
+  providers: [
+    DataTransformerService, ReportingDataService, WebsocketMessageService
+  ],
 })
-@RegisterWidget('app-opportunities', PrimeIcons.SHOPPING_BAG)
-export class OpportunitiesComponent {
+@RegisterWidget('app-opportunities', PrimeIcons.STOPWATCH)
+export class WatchlistComponent implements OnInit {
+  public parameters$ = input.required<any>({ alias: 'parameters' });
 
-  parameters$ = input.required<any>({ alias: 'parameters' });
-  Title$ = computed(() => this.parameters$()?.Title);
+  public data = setData();
 
-  loading$ = signal<boolean>(false);
+  public defaultParameters: any = {
+    reportTitle: 'Oppurtunity',
+    dataKey: 'numero_instrumento',
+    fixedReportKey: 1020,
+    websocketMessageType: 'Trade',
+  };
 
-  cols = [
-    { field: "symbol", header: "Symbol" },
-    { field: "volume", header: "Volume" },
-    { field: "price", header: "Price" },
-    { field: "open", header: "Open" },
-    { field: "change", header: "%" }
-  ] as const;
+  public title$ = computed<string>(() => this.parameters$ ? this.parameters$()?.reportTitle : undefined);
 
-  // Using a Map for quick lookup, insertion, and deletion
-  private stockSymbols: WritableSignal<Record<string, Stock>> = signal({});
+  private dataTableRef$ = viewChild('dataTableRef', { read: DataTableComponent });
 
-  // Computed signal to convert Map to an array for iteration in the template
-  data = computed(() => Object.values(this.stockSymbols()));
+  private destroyRef = inject(DestroyRef);
 
-  private tableRef$ = viewChild('tableRef', { read: Table });
-
-  // ---------------------------------------------------------------------------------------------------------
-  constructor() {
-
-    this.addStock();
-    this.addStock();
-    this.addStock();
-
-    // Start automatic price updates
-    setInterval(() => this.updateRandomRecord(), 618);
+  // --------------------------------------------------------------------------
+  constructor(
+    public transformer: DataTransformerService,
+    private reportingDataService: ReportingDataService,
+    private websocketMessageService: WebsocketMessageService,
+  ) {
   }
 
-  // ---------------------------------------------------------------------------------------------------------
-  // Add a new stock dynamically
-  addStock() {
+  // --------------------------------------------------------------------------
+  ngOnInit(): void {
+    this.transformer.config({
+      parameters: this.parameters$(),
+      destroyRef: this.destroyRef,
+      dataRef: this.data,
+      dataTableRef: this.dataTableRef$(),
+      dataLoadCompleted: this.reportingDataService.dataLoadCompleted,
+      updateReportDataItem: this.reportingDataService.updateReportDataItem,
+      setParameterForReport: this.reportingDataService.setParameterForReport,
+    });
 
-    // create a random name of four letters
-    const newSymbol = Array.from({ length: 3 }, () => String.fromCharCode(65 + Math.floor(Math.random() * 26))).join('');
-    const random = Math.random();
-    const newPrice = (Math.floor(random * 900000) + 100) / 100;
-    const newVolume = Math.floor(random * 10000) + 1;
+    this.reportingDataService.config({
+      parameters: this.parameters$(),
+      destroyRef: this.destroyRef,
+      data: this.transformer.processData,
+      dataLoadingStatus: this.transformer.processDataLoadingStatus,
+      error: this.transformer.processError,
+      dataOptions: this.transformer.processDataOptions,
+    });
 
-    this.stockSymbols.update((stocks: Record<string, Stock>) => {
-      const newStocks = { ...stocks }; // Create a shallow copy of the original Recor
-      newStocks[newSymbol] = new Stock(newSymbol, newVolume, newPrice);
-      return newStocks;
+    this.websocketMessageService.config({
+      parameters: this.parameters$(),
+      destroyRef: this.destroyRef,
+      data: this.transformer.upsertData
     });
   }
-
-  // ---------------------------------------------------------------------------------------------------------
-  // Remove a stock by its symbol
-  removeStock(symbol: string) {
-    this.stockSymbols.update((stocks: Record<string, Stock>) => {
-      const newStocks = { ...stocks }; // Create a shallow copy of the original Recor
-      delete newStocks[symbol];
-      return newStocks;
-    });
-  }
-
-  // ---------------------------------------------------------------------------------------------------------  
-  updateRandomRecord() {
-
-    const stocks = this.stockSymbols();
-    const keys = Object.keys(stocks);
-    if (keys.length) {
-      const stockKeys = Array.from(keys); // Get an array of keys
-      if (stockKeys.length) {
-        const randomSymbol = stockKeys[Math.floor(Math.random() * stockKeys.length)];
-        const stock = stocks[randomSymbol];
-        if (stock) {
-          const newPrice = Math.floor(100 * stock.price() + (Math.random() - 0.5) * 10) / 100;
-          const newVolume = Math.floor(Math.random() * 10000) + 1;
-          this.updateStock(randomSymbol, newPrice, newVolume);
-        }
-      }
-    }
-  }
-
-  // ---------------------------------------------------------------------------------------------------------
-  // Efficiently update the price of an existing stock
-  updateStock(name: string, newPrice: number = 0, newVolume: number = 0) {
-
-    this.stockSymbols.update(stocks => {
-
-      const stock = stocks[name];
-      if (stock) {
-        if (newPrice) stock.price.update(price => newPrice);
-        if (newVolume) stock.volume = newVolume;
-      }
-      return stocks;
-
-    });
-  }
-
-  // ---------------------------------------------------------------------------------------------------------
-  clearStocks() {
-    this.stockSymbols.set({});
-  }
-
-  // ---------------------------------------------------------------------------------------------------------
-  customSort(event: any) {
-  }
-
-  // ---------------------------------------------------------------------------------------------------------
-  private sortTableData(event) {
-    event.data.sort((data1, data2) => {
-      let value1 = data1[event.field];
-      let value2 = data2[event.field];
-      let result = null;
-      if (value1 == null && value2 != null) result = -1;
-      else if (value1 != null && value2 == null) result = 1;
-      else if (value1 == null && value2 == null) result = 0;
-      else if (typeof value1 === 'string' && typeof value2 === 'string') result = value1.localeCompare(value2);
-      else result = value1 < value2 ? -1 : value1 > value2 ? 1 : 0;
-
-      return event.order * result;
-    });
-  }
-
-  // ---------------------------------------------------------------------------------------------------------
-  private resetSort() {
-    if (this.tableRef$()) {
-      this.tableRef$().sortField = null;
-      this.tableRef$().sortOrder = null;
-    }
-  }
-
-  // ---------------------------------------------------------------------------------------------------------
-  onPageChange(event: any) {
-  }
-
-
 }
